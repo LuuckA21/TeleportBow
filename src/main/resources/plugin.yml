@@ -1,0 +1,21 @@
+name: TeleportBow
+version: ${project.version}
+main: me.luucka.teleportbow.TeleportBow
+api-version: 1.16
+authors: [ LuuckA ]
+description: Shoot an arrow and teleport
+commands:
+  tpbow:
+permissions:
+  tpbow.*:
+    default: op
+    description: Give players with op everything by default
+    children:
+      tpbow.give: true
+      tpbow.relaod: true
+  tpbow.give:
+    default: false
+    description: Allow you to use /tpbow command
+  tpbow.relaod:
+    default: false
+    description: Allow you to use /tpbow reload command
