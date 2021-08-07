@@ -1,18 +1,14 @@
 package me.luucka.teleportbow;
 
+import lombok.Getter;
 import me.luucka.teleportbow.commands.CmdTpBow;
-import me.luucka.teleportbow.listeners.ArrowOnHit;
-import me.luucka.teleportbow.listeners.PlayerOnJoin;
-import me.luucka.teleportbow.listeners.PlayerShootArrow;
+import me.luucka.teleportbow.listeners.PluginListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TeleportBow extends JavaPlugin {
 
+    @Getter
     private static TeleportBow plugin;
-
-    public static TeleportBow plugin() {
-        return plugin;
-    }
 
     @Override
     public void onEnable() {
@@ -35,8 +31,6 @@ public final class TeleportBow extends JavaPlugin {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new ArrowOnHit(), this);
-        getServer().getPluginManager().registerEvents(new PlayerOnJoin(), this);
-        getServer().getPluginManager().registerEvents(new PlayerShootArrow(), this);
+        getServer().getPluginManager().registerEvents(new PluginListener(), this);
     }
 }
