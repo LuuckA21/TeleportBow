@@ -20,9 +20,8 @@ public class PluginListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!TeleportBow.getPlugin().getConfig().getBoolean("bow.give-on-join")) {
-            return;
-        }
+        if (!TeleportBow.getPlugin().getConfig().getBoolean("bow.give-on-join")) return;
+
         event.getPlayer().getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.slot"), BowManager.createTpBow());
         event.getPlayer().getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
     }
@@ -37,19 +36,12 @@ public class PluginListener implements Listener {
         Player player = (Player) event.getEntity().getShooter();
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
 
-        if (itemInMainHand.getType().equals(Material.BOW)) {
-            NamespacedKey key = new NamespacedKey(TeleportBow.getPlugin(), "tpbow");
-            PersistentDataContainer container = itemInMainHand.getItemMeta().getPersistentDataContainer();
-            if (container.has(key, PersistentDataType.STRING)) {
-                String sKey = container.get(key, PersistentDataType.STRING);
-                if (sKey.equals("TpBow")) {
-                    Location location = event.getEntity().getLocation();
-                    event.getEntity().remove();
-                    location.setYaw(player.getLocation().getYaw());
-                    location.setPitch(player.getLocation().getPitch());
-                    player.teleport(location);
-                }
-            }
+        if (checkBow(itemInMainHand)) {
+            Location location = event.getEntity().getLocation();
+            event.getEntity().remove();
+            location.setYaw(player.getLocation().getYaw());
+            location.setPitch(player.getLocation().getPitch());
+            player.teleport(location);
         }
     }
 
@@ -62,17 +54,23 @@ public class PluginListener implements Listener {
         Player player = (Player) event.getEntity();
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
 
+        if (checkBow(itemInMainHand)) {
+            player.getInventory().setItem(TeleportBow.getPlugin().getConfig()
+                    .getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
+        }
+    }
+
+    private boolean checkBow(ItemStack itemInMainHand) {
         if (itemInMainHand.getType().equals(Material.BOW)) {
             NamespacedKey key = new NamespacedKey(TeleportBow.getPlugin(), "tpbow");
             PersistentDataContainer container = itemInMainHand.getItemMeta().getPersistentDataContainer();
             if (container.has(key, PersistentDataType.STRING)) {
                 String sKey = container.get(key, PersistentDataType.STRING);
-                if (sKey.equals("TpBow")) {
-                    player.getInventory().setItem(TeleportBow.getPlugin().getConfig()
-                            .getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
-                }
+                return sKey.equals("TpBow");
             }
         }
+
+        return false;
     }
 
 }

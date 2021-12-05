@@ -5,6 +5,8 @@ import me.luucka.teleportbow.commands.CmdTpBow;
 import me.luucka.teleportbow.listeners.PluginListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 public final class TeleportBow extends JavaPlugin {
 
     @Getter
@@ -14,8 +16,8 @@ public final class TeleportBow extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         saveDefaultConfig();
-        registerCommands();
-        registerEvents();
+        Objects.requireNonNull(getCommand("tpbow")).setExecutor(new CmdTpBow());
+        getServer().getPluginManager().registerEvents(new PluginListener(), this);
     }
 
     @Override
@@ -23,14 +25,4 @@ public final class TeleportBow extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    // Register Commands / Listener
-    //------------------------------------------------------------------------------------------------------------------
-
-    private void registerCommands() {
-        getCommand("tpbow").setExecutor(new CmdTpBow());
-    }
-
-    private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new PluginListener(), this);
-    }
 }

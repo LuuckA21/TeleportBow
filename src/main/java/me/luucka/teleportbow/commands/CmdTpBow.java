@@ -30,7 +30,7 @@ public class CmdTpBow implements TabExecutor {
             player.getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.slot"), BowManager.createTpBow());
             player.getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
         } else if (args.length == 1) {
-            if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("r")) {
+            if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
                 if (!player.hasPermission("tpbow.reload")) {
                     player.sendMessage(Chat.message(TeleportBow.getPlugin().getConfig().getString("message.no-perm")));
                     return true;
@@ -49,7 +49,7 @@ public class CmdTpBow implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> suggestions = new ArrayList<>();
-        if (args.length == 2) {
+        if (args.length == 1) {
             if (sender.hasPermission("tpbow.reload")) {
                 suggestions.add("reload");
             }
