@@ -11,13 +11,13 @@ public class BowManager {
 
     public static ItemStack createTpBow() {
 
-        ItemBuilder itemBuilder = new ItemBuilder(Material.BOW);
-        itemBuilder.setDisplayName(ColorTranslate.translate(Objects.requireNonNull(TeleportBow.getPlugin().getConfig().getString("bow.name"))))
+        ItemBuilder itemBuilder = new ItemBuilder(Material.BOW)
+                .setDisplayName(ColorTranslate.translate(Objects.requireNonNull(TeleportBow.getPlugin().getConfig().getString("bow.name"))))
                 .setLore(ColorTranslate.translate(TeleportBow.getPlugin().getConfig().getStringList("bow.lore")))
+                .setPersistentDataContainer(TeleportBow.getPlugin(), "tpbow", "TpBow")
                 .setUnbreakable(true)
-                .hideUnbreakable()
                 .hideAttributes()
-                .setPersistentDataContainer(TeleportBow.getPlugin(), "tpbow", "TpBow");
+                .hideUnbreakable();
 
         return itemBuilder.toItemStack();
     }
