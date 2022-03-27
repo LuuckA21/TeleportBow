@@ -6,7 +6,7 @@
 
     <groupId>me.luucka</groupId>
     <artifactId>TeleportBow</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <packaging>jar</packaging>
 
     <name>TeleportBow</name>
@@ -62,10 +62,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -80,11 +76,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.LuuckA21</groupId>
-            <artifactId>LCore</artifactId>
-            <version>1.4.1</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,20 +1,20 @@
 package me.luucka.teleportbow;
 
-import me.luucka.lcore.item.ItemBuilder;
-import me.luucka.lcore.utils.ColorTranslate;
+import me.luucka.teleportbow.utils.Color;
+import me.luucka.teleportbow.utils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 
-public class BowManager {
+public final class BowManager {
 
     public static ItemStack createTpBow() {
 
         ItemBuilder itemBuilder = new ItemBuilder(Material.BOW)
-                .setDisplayName(ColorTranslate.translate(Objects.requireNonNull(TeleportBow.getPlugin().getConfig().getString("bow.name"))))
-                .setLore(ColorTranslate.translate(TeleportBow.getPlugin().getConfig().getStringList("bow.lore")))
-                .setPersistentDataContainer(TeleportBow.getPlugin(), "tpbow", "TpBow")
+                .setDisplayName(Color.colorize(Objects.requireNonNull(TeleportBow.getPlugin().getConfig().getString("bow.name"))))
+                .setLore(Color.colorize(TeleportBow.getPlugin().getConfig().getStringList("bow.lore")))
+                .setPersistentDataContainerValue(TeleportBow.getPlugin(), "tpbow", "TpBow")
                 .setUnbreakable(true)
                 .hideAttributes()
                 .hideUnbreakable();

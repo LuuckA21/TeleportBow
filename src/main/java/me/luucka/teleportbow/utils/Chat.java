@@ -1,12 +1,13 @@
 package me.luucka.teleportbow.utils;
 
-import me.luucka.lcore.utils.ColorTranslate;
 import me.luucka.teleportbow.TeleportBow;
 
-public class Chat {
+public final class Chat {
+
+    private Chat() {}
 
     public static String message(String s) {
-        return ColorTranslate.translate(TeleportBow.getPlugin().getConfig().getString("message.prefix") + s);
+        return Color.colorize(TeleportBow.getPlugin().getConfig().getString("message.prefix") + s);
     }
 
 }

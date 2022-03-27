@@ -18,12 +18,18 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class PluginListener implements Listener {
 
+    private final TeleportBow PLUGIN;
+
+    public PluginListener(TeleportBow PLUGIN) {
+        this.PLUGIN = PLUGIN;
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!TeleportBow.getPlugin().getConfig().getBoolean("bow.give-on-join")) return;
+        if (!PLUGIN.getConfig().getBoolean("bow.give-on-join")) return;
 
-        event.getPlayer().getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.slot"), BowManager.createTpBow());
-        event.getPlayer().getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
+        event.getPlayer().getInventory().setItem(PLUGIN.getConfig().getInt("bow.slot"), BowManager.createTpBow());
+        event.getPlayer().getInventory().setItem(PLUGIN.getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
     }
 
     @EventHandler
@@ -55,14 +61,14 @@ public class PluginListener implements Listener {
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
 
         if (checkBow(itemInMainHand)) {
-            player.getInventory().setItem(TeleportBow.getPlugin().getConfig()
+            player.getInventory().setItem(PLUGIN.getConfig()
                     .getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
         }
     }
 
     private boolean checkBow(ItemStack itemInMainHand) {
         if (itemInMainHand.getType().equals(Material.BOW)) {
-            NamespacedKey key = new NamespacedKey(TeleportBow.getPlugin(), "tpbow");
+            NamespacedKey key = new NamespacedKey(PLUGIN, "tpbow");
             PersistentDataContainer container = itemInMainHand.getItemMeta().getPersistentDataContainer();
             if (container.has(key, PersistentDataType.STRING)) {
                 String sKey = container.get(key, PersistentDataType.STRING);

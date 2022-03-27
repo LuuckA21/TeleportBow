@@ -15,28 +15,34 @@ import java.util.List;
 
 public class CmdTpBow implements TabExecutor {
 
+    private final TeleportBow PLUGIN;
+
+    public CmdTpBow(TeleportBow PLUGIN) {
+        this.PLUGIN = PLUGIN;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Chat.message(TeleportBow.getPlugin().getConfig().getString("message.no-console")));
+            sender.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.no-console")));
             return true;
         }
         Player player = (Player) sender;
         if (args.length == 0) {
             if (!player.hasPermission("tpbow.give")) {
-                player.sendMessage(Chat.message(TeleportBow.getPlugin().getConfig().getString("message.no-perm")));
+                player.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.no-perm")));
                 return true;
             }
-            player.getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.slot"), BowManager.createTpBow());
-            player.getInventory().setItem(TeleportBow.getPlugin().getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
+            player.getInventory().setItem(PLUGIN.getConfig().getInt("bow.slot"), BowManager.createTpBow());
+            player.getInventory().setItem(PLUGIN.getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
                 if (!player.hasPermission("tpbow.reload")) {
-                    player.sendMessage(Chat.message(TeleportBow.getPlugin().getConfig().getString("message.no-perm")));
+                    player.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.no-perm")));
                     return true;
                 }
-                TeleportBow.getPlugin().reloadConfig();
-                player.sendMessage(Chat.message(TeleportBow.getPlugin().getConfig().getString("message.reload")));
+                PLUGIN.reloadConfig();
+                player.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.reload")));
                 return true;
             }
         } else {

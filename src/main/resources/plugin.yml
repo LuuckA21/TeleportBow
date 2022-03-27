@@ -6,6 +6,7 @@ authors: [ LuuckA ]
 description: Shoot an arrow and teleport
 commands:
   tpbow:
+    description: Main command
 permissions:
   tpbow.*:
     default: op
