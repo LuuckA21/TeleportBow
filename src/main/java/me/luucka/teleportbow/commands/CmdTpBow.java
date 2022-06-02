@@ -1,8 +1,6 @@
 package me.luucka.teleportbow.commands;
 
-import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.TeleportBow;
-import me.luucka.teleportbow.utils.Chat;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.luucka.teleportbow.utils.Color.colorize;
 
 public class CmdTpBow implements TabExecutor {
 
@@ -24,30 +24,28 @@ public class CmdTpBow implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.no-console")));
+            sender.sendMessage(colorize(PLUGIN.getSettings().getNoConsole()));
             return true;
         }
         Player player = (Player) sender;
         if (args.length == 0) {
             if (!player.hasPermission("tpbow.give")) {
-                player.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.no-perm")));
+                player.sendMessage(colorize(PLUGIN.getSettings().getNoPerm()));
                 return true;
             }
-            player.getInventory().setItem(PLUGIN.getConfig().getInt("bow.slot"), BowManager.createTpBow());
+            player.getInventory().setItem(PLUGIN.getConfig().getInt("bow.slot"), PLUGIN.createTpBow());
             player.getInventory().setItem(PLUGIN.getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
-        } else if (args.length == 1) {
+        } else {
             if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
                 if (!player.hasPermission("tpbow.reload")) {
-                    player.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.no-perm")));
+                    player.sendMessage(colorize(PLUGIN.getSettings().getNoPerm()));
                     return true;
                 }
-                PLUGIN.reloadConfig();
-                player.sendMessage(Chat.message(PLUGIN.getConfig().getString("message.reload")));
-                return true;
+                PLUGIN.getSettings().reload();
+                player.sendMessage(colorize(PLUGIN.getSettings().getReload()));
+            }  else {
+                player.sendMessage(colorize(PLUGIN.getSettings().getUsage()));
             }
-        } else {
-            player.sendMessage(Chat.message("&cUsage: /tpbow [reload]"));
-            return true;
         }
         return true;
     }

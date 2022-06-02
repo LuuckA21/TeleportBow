@@ -1,6 +1,5 @@
 package me.luucka.teleportbow.listeners;
 
-import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,10 +25,10 @@ public class PluginListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!PLUGIN.getConfig().getBoolean("bow.give-on-join")) return;
+        if (!PLUGIN.getSettings().isGiveOnJoin()) return;
 
-        event.getPlayer().getInventory().setItem(PLUGIN.getConfig().getInt("bow.slot"), BowManager.createTpBow());
-        event.getPlayer().getInventory().setItem(PLUGIN.getConfig().getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
+        event.getPlayer().getInventory().setItem(PLUGIN.getSettings().getBowSlot(), PLUGIN.createTpBow());
+        event.getPlayer().getInventory().setItem(PLUGIN.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
     }
 
     @EventHandler
@@ -61,8 +60,7 @@ public class PluginListener implements Listener {
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
 
         if (checkBow(itemInMainHand)) {
-            player.getInventory().setItem(PLUGIN.getConfig()
-                    .getInt("bow.arrow-slot"), new ItemStack(Material.ARROW, 1));
+            player.getInventory().setItem(PLUGIN.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
         }
     }
 

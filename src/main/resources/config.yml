@@ -7,7 +7,7 @@ bow:
   give-on-join: true
 
 message:
-  prefix: "&7[&b&lTeleport&3&lBow&7] "
+  prefix: "&7[&b&lTeleport&3&lBow&7]"
   reload: "&2Plugin reload!"
   no-console: "&cYou cannot run this command!"
   no-perm: "&cYou do not have the permission!"
