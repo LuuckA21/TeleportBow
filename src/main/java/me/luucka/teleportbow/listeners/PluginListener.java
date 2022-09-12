@@ -3,32 +3,29 @@ package me.luucka.teleportbow.listeners;
 import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 public class PluginListener implements Listener {
 
-    private final TeleportBow PLUGIN;
+    private final TeleportBow plugin;
 
-    public PluginListener(TeleportBow PLUGIN) {
-        this.PLUGIN = PLUGIN;
+    public PluginListener(TeleportBow plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!PLUGIN.getSettings().isGiveOnJoin()) return;
-
-        event.getPlayer().getInventory().setItem(PLUGIN.getSettings().getBowSlot(), PLUGIN.createTpBow());
-        event.getPlayer().getInventory().setItem(PLUGIN.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
+        if (plugin.getSettings().isGiveOnJoin()) {
+            plugin.giveBow(event.getPlayer());
+        }
     }
 
     @EventHandler
@@ -41,7 +38,7 @@ public class PluginListener implements Listener {
         Player player = (Player) event.getEntity().getShooter();
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
 
-        if (checkBow(itemInMainHand)) {
+        if (plugin.checkBow(itemInMainHand)) {
             Location location = event.getEntity().getLocation();
             event.getEntity().remove();
             location.setYaw(player.getLocation().getYaw());
@@ -59,22 +56,20 @@ public class PluginListener implements Listener {
         Player player = (Player) event.getEntity();
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
 
-        if (checkBow(itemInMainHand)) {
-            player.getInventory().setItem(PLUGIN.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
+        if (plugin.checkBow(itemInMainHand)) {
+            player.getInventory().setItem(plugin.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
         }
     }
 
-    private boolean checkBow(ItemStack itemInMainHand) {
-        if (itemInMainHand.getType().equals(Material.BOW)) {
-            NamespacedKey key = new NamespacedKey(PLUGIN, "tpbow");
-            PersistentDataContainer container = itemInMainHand.getItemMeta().getPersistentDataContainer();
-            if (container.has(key, PersistentDataType.STRING)) {
-                String sKey = container.get(key, PersistentDataType.STRING);
-                return sKey.equals("TpBow");
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!plugin.getSettings().isCanBeMovedInInventory()) {
+            ItemStack item = event.getCurrentItem();
+            if (item == null) return;
+            if (plugin.checkBow(item)) {
+                event.setCancelled(true);
             }
         }
-
-        return false;
     }
 
 }

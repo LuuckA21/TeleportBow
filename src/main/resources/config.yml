@@ -5,6 +5,7 @@ bow:
   slot: 0
   arrow-slot: 9
   give-on-join: true
+  can-be-moved-in-inventory: true
 
 message:
   prefix: "&7[&b&lTeleport&3&lBow&7]"

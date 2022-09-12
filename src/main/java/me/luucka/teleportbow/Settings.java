@@ -6,11 +6,11 @@ import java.util.List;
 
 public class Settings {
 
-    private final TeleportBow PLUGIN;
+    private final TeleportBow plugin;
 
     public Settings(final TeleportBow plugin) {
-        this.PLUGIN = plugin;
-        this.PLUGIN.saveDefaultConfig();
+        this.plugin = plugin;
+        this.plugin.saveDefaultConfig();
         reload();
     }
 
@@ -28,6 +28,9 @@ public class Settings {
 
     @Getter
     private boolean giveOnJoin;
+
+    @Getter
+    private boolean canBeMovedInInventory;
 
     private String prefix;
 
@@ -56,54 +59,23 @@ public class Settings {
     }
 
     public void reload() {
-        PLUGIN.reloadConfig();
-        bowName = _getBowName();
-        bowLore = _getBowLore();
-        bowSlot = _getBowSlot();
-        arrowSlot = _getArrowSlot();
-        giveOnJoin = _giveOnJoin();
+        plugin.reloadConfig();
+        bowName = plugin.getConfig().getString("bow.name");
+        bowLore = plugin.getConfig().getStringList("bow.lore");
+        bowSlot = plugin.getConfig().getInt("bow.slot");
+        arrowSlot = plugin.getConfig().getInt("bow.arrow-slot");
+        giveOnJoin = plugin.getConfig().getBoolean("bow.give-on-join");
+        canBeMovedInInventory = plugin.getConfig().getBoolean("bow.can-be-moved-in-inventory");
         prefix = _getPrefix();
-        reload = _getReload();
-        noConsole = _getNoConsole();
-        noPerm = _getNoPerm();
+        reload = plugin.getConfig().getString("message.reload");
+        noConsole = plugin.getConfig().getString("message.no-console");
+        noPerm = plugin.getConfig().getString("message.no-perm");
         usage = "&cUsage: /tpbow [reload]";
     }
 
-    private String _getBowName() {
-        return PLUGIN.getConfig().getString("bow.name");
-    }
-
-    private List<String> _getBowLore() {
-        return PLUGIN.getConfig().getStringList("bow.lore");
-    }
-
-    private int _getBowSlot() {
-        return PLUGIN.getConfig().getInt("bow.slot");
-    }
-
-    private int _getArrowSlot() {
-        return PLUGIN.getConfig().getInt("bow.arrow-slot");
-    }
-
-    private boolean _giveOnJoin() {
-        return PLUGIN.getConfig().getBoolean("bow.give-on-join");
-    }
-
     private String _getPrefix() {
-        String p = PLUGIN.getConfig().getString("message.prefix");
+        String p = plugin.getConfig().getString("message.prefix");
         return p.isEmpty() ? "" : p + " ";
-    }
-
-    private String _getReload() {
-        return PLUGIN.getConfig().getString("message.reload");
-    }
-
-    private String _getNoConsole() {
-        return PLUGIN.getConfig().getString("message.no-console");
-    }
-
-    private String _getNoPerm() {
-        return PLUGIN.getConfig().getString("message.no-perm");
     }
 
 }
