@@ -88,7 +88,7 @@ public class PluginListener implements Listener {
 
     @EventHandler
     public void onItemDrop(final PlayerDropItemEvent event) {
-        if (!plugin.getSettings().isCanBeMovedInInventory()) {
+        if (!plugin.getSettings().isCanBeDropped()) {
             final ItemStack item = event.getItemDrop().getItemStack();
             if (checkBow(item)) {
                 event.setCancelled(true);
@@ -124,7 +124,7 @@ public class PluginListener implements Listener {
             if (checkBow(offHand)) isOffHand = true;
         }
 
-        if (!plugin.getSettings().isCanBeMovedInInventory() && (isMainHand || isOffHand)) event.setCancelled(true);
+        if (!plugin.getSettings().isCanBeSwapped() && (isMainHand || isOffHand)) event.setCancelled(true);
     }
 
     public boolean checkBow(final ItemStack item) {

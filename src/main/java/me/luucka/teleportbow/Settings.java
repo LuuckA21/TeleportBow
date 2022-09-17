@@ -32,6 +32,12 @@ public class Settings {
     @Getter
     private boolean canBeMovedInInventory;
 
+    @Getter
+    private boolean canBeDropped;
+
+    @Getter
+    private boolean canBeSwapped;
+
     private String prefix;
 
     private String reload;
@@ -66,6 +72,8 @@ public class Settings {
         arrowSlot = plugin.getConfig().getInt("bow.arrow-slot");
         giveOnJoin = plugin.getConfig().getBoolean("bow.give-on-join");
         canBeMovedInInventory = plugin.getConfig().getBoolean("bow.can-be-moved-in-inventory");
+        canBeDropped = plugin.getConfig().getBoolean("bow.can-be-dropped");
+        canBeSwapped = plugin.getConfig().getBoolean("bow.can-be-swapped");
         prefix = _getPrefix();
         reload = plugin.getConfig().getString("message.reload");
         noConsole = plugin.getConfig().getString("message.no-console");
