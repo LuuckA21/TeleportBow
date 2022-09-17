@@ -3,9 +3,11 @@ package me.luucka.teleportbow.listeners;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import me.luucka.teleportbow.TeleportBow;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,12 +15,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class PluginListener implements Listener {
 
@@ -45,7 +51,6 @@ public class PluginListener implements Listener {
         }
 
         final Player player = (Player) event.getEntity().getShooter();
-
         final int entityId = event.getEntity().getEntityId();
         if (!tpArrows.get(player.getUniqueId()).contains(entityId)) return;
 
@@ -65,10 +70,29 @@ public class PluginListener implements Listener {
         }
 
         final Player player = (Player) event.getEntity();
+        final ItemStack bow = event.getBow();
+        if (bow == null) return;
 
-        if (checkBow(event.getBow())) {
-            tpArrows.put(player.getUniqueId(), event.getProjectile().getEntityId());
+        if (checkBow(bow)) {
+            final int entityId = event.getProjectile().getEntityId();
+            tpArrows.put(player.getUniqueId(), entityId);
             player.getInventory().setItem(plugin.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
+            (new BukkitRunnable() {
+                @Override
+                public void run() {
+                    tpArrows.remove(player.getUniqueId(), entityId);
+                }
+            }).runTaskLaterAsynchronously(plugin, 1200L);
+        }
+    }
+
+    @EventHandler
+    public void onItemDrop(final PlayerDropItemEvent event) {
+        if (!plugin.getSettings().isCanBeMovedInInventory()) {
+            final ItemStack item = event.getItemDrop().getItemStack();
+            if (checkBow(item)) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -81,6 +105,26 @@ public class PluginListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler
+    public void onSwapHandItem(final PlayerSwapHandItemsEvent event) {
+        final ItemStack mainHand = event.getMainHandItem();
+        final ItemStack offHand = event.getOffHandItem();
+
+        if (mainHand == null && offHand == null) return;
+
+        boolean isMainHand = false;
+        if (mainHand != null) {
+            if (checkBow(mainHand)) isMainHand = true;
+        }
+
+        boolean isOffHand = false;
+        if (offHand != null) {
+            if (checkBow(offHand)) isOffHand = true;
+        }
+
+        if (!plugin.getSettings().isCanBeMovedInInventory() && (isMainHand || isOffHand)) event.setCancelled(true);
     }
 
     public boolean checkBow(final ItemStack item) {
