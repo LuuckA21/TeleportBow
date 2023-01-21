@@ -3,11 +3,9 @@ package me.luucka.teleportbow.listeners;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import me.luucka.teleportbow.TeleportBow;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,8 +21,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
-import java.util.logging.Level;
+import java.util.UUID;
 
 public class PluginListener implements Listener {
 
@@ -32,19 +29,19 @@ public class PluginListener implements Listener {
 
     private final Multimap<UUID, Integer> tpArrows = ArrayListMultimap.create();
 
-    public PluginListener(TeleportBow plugin) {
+    public PluginListener(final TeleportBow plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
+    public void onJoin(final PlayerJoinEvent event) {
         if (plugin.getSettings().isGiveOnJoin()) {
             plugin.giveBow(event.getPlayer());
         }
     }
 
     @EventHandler
-    public void onArrowHit(ProjectileHitEvent event) {
+    public void onArrowHit(final ProjectileHitEvent event) {
         if (event.getEntityType() != EntityType.ARROW ||
                 !(event.getEntity().getShooter() instanceof Player)) {
             return;
@@ -64,7 +61,7 @@ public class PluginListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerShootBow(EntityShootBowEvent event) {
+    public void onPlayerShootBow(final EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
@@ -97,9 +94,9 @@ public class PluginListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void onInventoryClick(final InventoryClickEvent event) {
         if (!plugin.getSettings().isCanBeMovedInInventory()) {
-            ItemStack item = event.getCurrentItem();
+            final ItemStack item = event.getCurrentItem();
             if (item == null) return;
             if (checkBow(item)) {
                 event.setCancelled(true);
@@ -127,7 +124,7 @@ public class PluginListener implements Listener {
         if (!plugin.getSettings().isCanBeSwapped() && (isMainHand || isOffHand)) event.setCancelled(true);
     }
 
-    public boolean checkBow(final ItemStack item) {
+    private boolean checkBow(final ItemStack item) {
         if (item.getType().equals(Material.BOW)) {
             NamespacedKey key = new NamespacedKey(plugin, "tpbow");
             PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
