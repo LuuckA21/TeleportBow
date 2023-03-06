@@ -2,6 +2,7 @@ package me.luucka.teleportbow.listeners;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import me.luucka.teleportbow.Settings;
 import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,16 +27,18 @@ import java.util.UUID;
 public class PluginListener implements Listener {
 
     private final TeleportBow plugin;
+    private final Settings settings;
 
     private final Multimap<UUID, Integer> tpArrows = ArrayListMultimap.create();
 
     public PluginListener(final TeleportBow plugin) {
         this.plugin = plugin;
+        this.settings = plugin.getSettings();
     }
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
-        if (plugin.getSettings().isGiveOnJoin()) {
+        if (settings.isGiveOnJoin()) {
             plugin.giveBow(event.getPlayer());
         }
     }
@@ -73,7 +76,7 @@ public class PluginListener implements Listener {
         if (checkBow(bow)) {
             final int entityId = event.getProjectile().getEntityId();
             tpArrows.put(player.getUniqueId(), entityId);
-            player.getInventory().setItem(plugin.getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
+            player.getInventory().setItem(settings.getArrowSlot(), new ItemStack(Material.ARROW, 1));
             (new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -85,7 +88,7 @@ public class PluginListener implements Listener {
 
     @EventHandler
     public void onItemDrop(final PlayerDropItemEvent event) {
-        if (!plugin.getSettings().isCanBeDropped()) {
+        if (!settings.isCanBeDropped()) {
             final ItemStack item = event.getItemDrop().getItemStack();
             if (checkBow(item)) {
                 event.setCancelled(true);
@@ -95,7 +98,7 @@ public class PluginListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
-        if (!plugin.getSettings().isCanBeMovedInInventory()) {
+        if (!settings.isCanBeMovedInInventory()) {
             final ItemStack item = event.getCurrentItem();
             if (item == null) return;
             if (checkBow(item)) {
@@ -121,17 +124,17 @@ public class PluginListener implements Listener {
             if (checkBow(offHand)) isOffHand = true;
         }
 
-        if (!plugin.getSettings().isCanBeSwapped() && (isMainHand || isOffHand)) event.setCancelled(true);
+        if (!settings.isCanBeSwapped() && (isMainHand || isOffHand)) event.setCancelled(true);
     }
 
     private boolean checkBow(final ItemStack item) {
-        if (item.getType().equals(Material.BOW)) {
-            NamespacedKey key = new NamespacedKey(plugin, "tpbow");
-            PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-            if (container.has(key, PersistentDataType.STRING)) {
-                String sKey = container.get(key, PersistentDataType.STRING);
-                return sKey.equals("TpBow");
-            }
+        if (!item.getType().equals(Material.BOW)) return false;
+        NamespacedKey key = new NamespacedKey(plugin, "tpbow");
+        PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+        if (container.has(key, PersistentDataType.STRING)) {
+            final String sKey = container.get(key, PersistentDataType.STRING);
+            if (sKey == null) return false;
+            return sKey.equals("TpBow");
         }
         return false;
     }

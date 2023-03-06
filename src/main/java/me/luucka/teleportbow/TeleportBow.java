@@ -24,20 +24,19 @@ public final class TeleportBow extends JavaPlugin {
     }
 
     public void giveBow(final Player player) {
-        player.getInventory().setItem(getSettings().getBowSlot(), getBow());
-        player.getInventory().setItem(getSettings().getArrowSlot(), new ItemStack(Material.ARROW, 1));
+        player.getInventory().setItem(settings.getBowSlot(), getBow());
+        player.getInventory().setItem(settings.getArrowSlot(), new ItemStack(Material.ARROW, 1));
     }
 
     private ItemStack getBow() {
-        ItemBuilder itemBuilder = new ItemBuilder(Material.BOW)
+        return new ItemBuilder(Material.BOW)
                 .setDisplayName(colorize(settings.getBowName()))
                 .setLore(colorize(settings.getBowLore()))
                 .setPersistentDataContainerValue(this, "tpbow", "TpBow")
                 .setUnbreakable(true)
                 .hideAttributes()
-                .hideUnbreakable();
-
-        return itemBuilder.toItemStack();
+                .hideUnbreakable()
+                .toItemStack();
     }
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 public class Settings {
 
     private final TeleportBow plugin;
-
+    
     public Settings(final TeleportBow plugin) {
         this.plugin = plugin;
         this.plugin.saveDefaultConfig();
@@ -83,6 +83,7 @@ public class Settings {
 
     private String _getPrefix() {
         String p = plugin.getConfig().getString("message.prefix");
+        if (p == null) return "";
         return p.isEmpty() ? "" : p + " ";
     }
 

@@ -25,7 +25,7 @@ public class CmdTpBow implements TabExecutor {
             sender.sendMessage(colorize(plugin.getSettings().getNoConsole()));
             return true;
         }
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
         if (args.length == 0) {
             if (!player.hasPermission("tpbow.give")) {
                 player.sendMessage(colorize(plugin.getSettings().getNoPerm()));
@@ -41,7 +41,7 @@ public class CmdTpBow implements TabExecutor {
                 }
                 plugin.getSettings().reload();
                 player.sendMessage(colorize(plugin.getSettings().getReload()));
-            }  else {
+            } else {
                 player.sendMessage(colorize(plugin.getSettings().getUsage()));
             }
         }
@@ -55,8 +55,7 @@ public class CmdTpBow implements TabExecutor {
             if (sender.hasPermission("tpbow.reload")) {
                 suggestions.add("reload");
             }
-            return suggestions;
         }
-        return null;
+        return suggestions;
     }
 }
