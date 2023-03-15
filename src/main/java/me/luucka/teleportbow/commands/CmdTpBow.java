@@ -1,5 +1,6 @@
 package me.luucka.teleportbow.commands;
 
+import me.luucka.teleportbow.Settings;
 import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,35 +15,36 @@ import static me.luucka.teleportbow.utils.Color.colorize;
 public class CmdTpBow implements TabExecutor {
 
     private final TeleportBow plugin;
+    private final Settings settings;
 
     public CmdTpBow(TeleportBow plugin) {
         this.plugin = plugin;
+        this.settings = plugin.getSettings();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(colorize(plugin.getSettings().getNoConsole()));
+            sender.sendMessage(colorize(settings.getNoConsole()));
             return true;
         }
         final Player player = (Player) sender;
         if (args.length == 0) {
             if (!player.hasPermission("tpbow.give")) {
-                player.sendMessage(colorize(plugin.getSettings().getNoPerm()));
+                player.sendMessage(colorize(settings.getNoPerm()));
                 return true;
             }
-
             plugin.giveBow(player);
         } else {
             if (args[0].equalsIgnoreCase("reload")) {
                 if (!player.hasPermission("tpbow.reload")) {
-                    player.sendMessage(colorize(plugin.getSettings().getNoPerm()));
+                    player.sendMessage(colorize(settings.getNoPerm()));
                     return true;
                 }
-                plugin.getSettings().reload();
-                player.sendMessage(colorize(plugin.getSettings().getReload()));
+                settings.reload();
+                player.sendMessage(colorize(settings.getReload()));
             } else {
-                player.sendMessage(colorize(plugin.getSettings().getUsage()));
+                player.sendMessage(colorize(settings.getUsage()));
             }
         }
         return true;

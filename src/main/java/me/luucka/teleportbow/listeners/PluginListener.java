@@ -89,8 +89,7 @@ public class PluginListener implements Listener {
     @EventHandler
     public void onItemDrop(final PlayerDropItemEvent event) {
         if (!settings.isCanBeDropped()) {
-            final ItemStack item = event.getItemDrop().getItemStack();
-            if (checkBow(item)) {
+            if (checkBow(event.getItemDrop().getItemStack())) {
                 event.setCancelled(true);
             }
         }
@@ -128,11 +127,11 @@ public class PluginListener implements Listener {
     }
 
     private boolean checkBow(final ItemStack item) {
-        if (!item.getType().equals(Material.BOW)) return false;
+        if (item.getType() != Material.BOW) return false;
         NamespacedKey key = new NamespacedKey(plugin, "tpbow");
         PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
         if (container.has(key, PersistentDataType.STRING)) {
-            final String sKey = container.get(key, PersistentDataType.STRING);
+            String sKey = container.get(key, PersistentDataType.STRING);
             if (sKey == null) return false;
             return sKey.equals("TpBow");
         }
