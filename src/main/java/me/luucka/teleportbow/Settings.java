@@ -7,7 +7,7 @@ import java.util.List;
 public class Settings {
 
     private final TeleportBow plugin;
-    
+
     public Settings(final TeleportBow plugin) {
         this.plugin = plugin;
         this.plugin.saveDefaultConfig();
@@ -78,7 +78,7 @@ public class Settings {
         reload = plugin.getConfig().getString("message.reload");
         noConsole = plugin.getConfig().getString("message.no-console");
         noPerm = plugin.getConfig().getString("message.no-perm");
-        usage = "&cUsage: /tpbow [reload]";
+        usage = plugin.getConfig().getString("message.usage", "&cUsage: /tpbow [reload]");
     }
 
     private String _getPrefix() {

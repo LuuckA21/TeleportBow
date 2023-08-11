@@ -12,12 +12,12 @@ import java.util.List;
 
 import static me.luucka.teleportbow.utils.Color.colorize;
 
-public class CmdTpBow implements TabExecutor {
+public class TpBowCommand implements TabExecutor {
 
     private final TeleportBow plugin;
     private final Settings settings;
 
-    public CmdTpBow(TeleportBow plugin) {
+    public TpBowCommand(TeleportBow plugin) {
         this.plugin = plugin;
         this.settings = plugin.getSettings();
     }

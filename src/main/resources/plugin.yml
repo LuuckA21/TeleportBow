@@ -1,7 +1,7 @@
 name: TeleportBow
 version: ${project.version}
 main: me.luucka.teleportbow.TeleportBow
-api-version: 1.16
+api-version: 1.14
 authors: [ LuuckA ]
 description: Shoot an arrow and teleport
 commands:

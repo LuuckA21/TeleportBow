@@ -1,7 +1,7 @@
 package me.luucka.teleportbow;
 
 import lombok.Getter;
-import me.luucka.teleportbow.commands.CmdTpBow;
+import me.luucka.teleportbow.commands.TpBowCommand;
 import me.luucka.teleportbow.listeners.PluginListener;
 import me.luucka.teleportbow.utils.ItemBuilder;
 import org.bukkit.Material;
@@ -19,7 +19,7 @@ public final class TeleportBow extends JavaPlugin {
     @Override
     public void onEnable() {
         settings = new Settings(this);
-        getCommand("tpbow").setExecutor(new CmdTpBow(this));
+        getCommand("tpbow").setExecutor(new TpBowCommand(this));
         getServer().getPluginManager().registerEvents(new PluginListener(this), this);
     }
 

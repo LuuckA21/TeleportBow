@@ -14,3 +14,4 @@ message:
   reload: "&2Plugin reload!"
   no-console: "&cYou cannot run this command!"
   no-perm: "&cYou do not have the permission!"
+  usage: "&cUsage: /tpbow [reload]"
