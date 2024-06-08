@@ -1,90 +1,112 @@
 package me.luucka.teleportbow;
 
-import lombok.Getter;
-
 import java.util.List;
 
 public class Settings {
 
-    private final TeleportBow plugin;
+	private final TeleportBow plugin;
 
-    public Settings(final TeleportBow plugin) {
-        this.plugin = plugin;
-        this.plugin.saveDefaultConfig();
-        reload();
-    }
+	public Settings(final TeleportBow plugin) {
+		this.plugin = plugin;
+		this.plugin.saveDefaultConfig();
+		reload();
+	}
 
-    @Getter
-    private String bowName;
+	private String bowName;
 
-    @Getter
-    private List<String> bowLore;
+	private List<String> bowLore;
 
-    @Getter
-    private int bowSlot;
+	private int bowSlot;
 
-    @Getter
-    private int arrowSlot;
+	private int arrowSlot;
 
-    @Getter
-    private boolean giveOnJoin;
+	private boolean giveOnJoin;
 
-    @Getter
-    private boolean canBeMovedInInventory;
+	private boolean canBeMovedInInventory;
 
-    @Getter
-    private boolean canBeDropped;
+	private boolean canBeDropped;
 
-    @Getter
-    private boolean canBeSwapped;
+	private boolean canBeSwapped;
 
-    private String prefix;
+	private String prefix;
 
-    private String reload;
+	private String reload;
 
-    private String noConsole;
+	private String noConsole;
 
-    private String noPerm;
+	private String noPerm;
 
-    private String usage;
+	private String usage;
 
-    public String getReload() {
-        return prefix + reload;
-    }
+	public String getBowName() {
+		return bowName;
+	}
 
-    public String getNoConsole() {
-        return prefix + noConsole;
-    }
+	public List<String> getBowLore() {
+		return bowLore;
+	}
 
-    public String getNoPerm() {
-        return prefix + noPerm;
-    }
+	public int getBowSlot() {
+		return bowSlot;
+	}
 
-    public String getUsage() {
-        return prefix + usage;
-    }
+	public int getArrowSlot() {
+		return arrowSlot;
+	}
 
-    public void reload() {
-        plugin.reloadConfig();
-        bowName = plugin.getConfig().getString("bow.name");
-        bowLore = plugin.getConfig().getStringList("bow.lore");
-        bowSlot = plugin.getConfig().getInt("bow.slot");
-        arrowSlot = plugin.getConfig().getInt("bow.arrow-slot");
-        giveOnJoin = plugin.getConfig().getBoolean("bow.give-on-join");
-        canBeMovedInInventory = plugin.getConfig().getBoolean("bow.can-be-moved-in-inventory");
-        canBeDropped = plugin.getConfig().getBoolean("bow.can-be-dropped");
-        canBeSwapped = plugin.getConfig().getBoolean("bow.can-be-swapped");
-        prefix = _getPrefix();
-        reload = plugin.getConfig().getString("message.reload");
-        noConsole = plugin.getConfig().getString("message.no-console");
-        noPerm = plugin.getConfig().getString("message.no-perm");
-        usage = plugin.getConfig().getString("message.usage", "&cUsage: /tpbow [reload]");
-    }
+	public boolean isGiveOnJoin() {
+		return giveOnJoin;
+	}
 
-    private String _getPrefix() {
-        String p = plugin.getConfig().getString("message.prefix");
-        if (p == null) return "";
-        return p.isEmpty() ? "" : p + " ";
-    }
+	public boolean isCanBeMovedInInventory() {
+		return canBeMovedInInventory;
+	}
+
+	public boolean isCanBeDropped() {
+		return canBeDropped;
+	}
+
+	public boolean isCanBeSwapped() {
+		return canBeSwapped;
+	}
+
+	public String getReload() {
+		return prefix + reload;
+	}
+
+	public String getNoConsole() {
+		return prefix + noConsole;
+	}
+
+	public String getNoPerm() {
+		return prefix + noPerm;
+	}
+
+	public String getUsage() {
+		return prefix + usage;
+	}
+
+	public void reload() {
+		plugin.reloadConfig();
+		bowName = plugin.getConfig().getString("bow.name");
+		bowLore = plugin.getConfig().getStringList("bow.lore");
+		bowSlot = plugin.getConfig().getInt("bow.slot");
+		arrowSlot = plugin.getConfig().getInt("bow.arrow-slot");
+		giveOnJoin = plugin.getConfig().getBoolean("bow.give-on-join");
+		canBeMovedInInventory = plugin.getConfig().getBoolean("bow.can-be-moved-in-inventory");
+		canBeDropped = plugin.getConfig().getBoolean("bow.can-be-dropped");
+		canBeSwapped = plugin.getConfig().getBoolean("bow.can-be-swapped");
+		prefix = _getPrefix();
+		reload = plugin.getConfig().getString("message.reload");
+		noConsole = plugin.getConfig().getString("message.no-console");
+		noPerm = plugin.getConfig().getString("message.no-perm");
+		usage = plugin.getConfig().getString("message.usage", "&cUsage: /tpbow [reload]");
+	}
+
+	private String _getPrefix() {
+		String p = plugin.getConfig().getString("message.prefix");
+		if (p == null) return "";
+		return p.isEmpty() ? "" : p + " ";
+	}
 
 }
