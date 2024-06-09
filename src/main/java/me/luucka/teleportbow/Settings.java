@@ -4,109 +4,53 @@ import java.util.List;
 
 public class Settings {
 
-	private final TeleportBow plugin;
+	public static String BOW_NAME;
 
-	public Settings(final TeleportBow plugin) {
-		this.plugin = plugin;
-		this.plugin.saveDefaultConfig();
-		reload();
+	public static List<String> BOW_LORE;
+
+	public static int BOW_SLOT;
+
+	public static int ARROW_SLOT;
+
+	public static boolean GIVE_ON_JOIN;
+
+	public static boolean CAN_BE_MOVED_IN_INVENTORY;
+
+	public static boolean CAN_BE_DROPPED;
+
+	public static boolean CAN_BE_SWAPPED;
+
+	public static String PREFIX;
+
+	public static String RELOAD;
+
+	public static String NO_CONSOLE;
+
+	public static String NO_PERM;
+
+	public static String USAGE;
+
+	public static void init() {
+		TeleportBow.getInstance().reloadConfig();
+		BOW_NAME = TeleportBow.getInstance().getConfig().getString("bow.name");
+		BOW_LORE = TeleportBow.getInstance().getConfig().getStringList("bow.lore");
+		BOW_SLOT = TeleportBow.getInstance().getConfig().getInt("bow.slot");
+		ARROW_SLOT = TeleportBow.getInstance().getConfig().getInt("bow.arrow-slot");
+		GIVE_ON_JOIN = TeleportBow.getInstance().getConfig().getBoolean("bow.give-on-join");
+		CAN_BE_MOVED_IN_INVENTORY = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-moved-in-inventory");
+		CAN_BE_DROPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-dropped");
+		CAN_BE_SWAPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-swapped");
+		PREFIX = _getPrefix();
+		RELOAD = PREFIX + TeleportBow.getInstance().getConfig().getString("message.reload");
+		NO_CONSOLE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-console");
+		NO_PERM = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-perm");
+		USAGE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.usage", "&cUsage: /tpbow [reload]");
 	}
 
-	private String bowName;
-
-	private List<String> bowLore;
-
-	private int bowSlot;
-
-	private int arrowSlot;
-
-	private boolean giveOnJoin;
-
-	private boolean canBeMovedInInventory;
-
-	private boolean canBeDropped;
-
-	private boolean canBeSwapped;
-
-	private String prefix;
-
-	private String reload;
-
-	private String noConsole;
-
-	private String noPerm;
-
-	private String usage;
-
-	public String getBowName() {
-		return bowName;
-	}
-
-	public List<String> getBowLore() {
-		return bowLore;
-	}
-
-	public int getBowSlot() {
-		return bowSlot;
-	}
-
-	public int getArrowSlot() {
-		return arrowSlot;
-	}
-
-	public boolean isGiveOnJoin() {
-		return giveOnJoin;
-	}
-
-	public boolean isCanBeMovedInInventory() {
-		return canBeMovedInInventory;
-	}
-
-	public boolean isCanBeDropped() {
-		return canBeDropped;
-	}
-
-	public boolean isCanBeSwapped() {
-		return canBeSwapped;
-	}
-
-	public String getReload() {
-		return prefix + reload;
-	}
-
-	public String getNoConsole() {
-		return prefix + noConsole;
-	}
-
-	public String getNoPerm() {
-		return prefix + noPerm;
-	}
-
-	public String getUsage() {
-		return prefix + usage;
-	}
-
-	public void reload() {
-		plugin.reloadConfig();
-		bowName = plugin.getConfig().getString("bow.name");
-		bowLore = plugin.getConfig().getStringList("bow.lore");
-		bowSlot = plugin.getConfig().getInt("bow.slot");
-		arrowSlot = plugin.getConfig().getInt("bow.arrow-slot");
-		giveOnJoin = plugin.getConfig().getBoolean("bow.give-on-join");
-		canBeMovedInInventory = plugin.getConfig().getBoolean("bow.can-be-moved-in-inventory");
-		canBeDropped = plugin.getConfig().getBoolean("bow.can-be-dropped");
-		canBeSwapped = plugin.getConfig().getBoolean("bow.can-be-swapped");
-		prefix = _getPrefix();
-		reload = plugin.getConfig().getString("message.reload");
-		noConsole = plugin.getConfig().getString("message.no-console");
-		noPerm = plugin.getConfig().getString("message.no-perm");
-		usage = plugin.getConfig().getString("message.usage", "&cUsage: /tpbow [reload]");
-	}
-
-	private String _getPrefix() {
-		String p = plugin.getConfig().getString("message.prefix");
-		if (p == null) return "";
-		return p.isEmpty() ? "" : p + " ";
+	private static String _getPrefix() {
+		String prefix = TeleportBow.getInstance().getConfig().getString("message.prefix");
+		if (prefix == null) return "";
+		return prefix.isEmpty() ? "" : prefix + " ";
 	}
 
 }

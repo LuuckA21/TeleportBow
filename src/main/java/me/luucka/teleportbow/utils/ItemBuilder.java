@@ -56,7 +56,7 @@ public class ItemBuilder {
 	 *
 	 * @return an {@link ItemStack}
 	 */
-	public ItemStack toItemStack() {
+	public ItemStack make() {
 		ItemStack item = new ItemStack(material, amount);
 		item.setItemMeta(meta);
 
@@ -147,7 +147,7 @@ public class ItemBuilder {
 	}
 
 	public static ItemStack setMetadata(final ItemStack item, final String key, final String value) {
-		final boolean remove = value == null || "".equals(value);
+		final boolean remove = value == null || value.isEmpty();
 		final ItemStack clone = new ItemStack(item);
 
 		return NBT.modify(clone, tag -> {
