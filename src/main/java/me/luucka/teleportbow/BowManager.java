@@ -1,12 +1,12 @@
 package me.luucka.teleportbow;
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import me.luucka.teleportbow.utils.ItemBuilder;
+import me.luucka.teleportbow.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import static me.luucka.teleportbow.utils.Color.colorize;
+import static me.luucka.teleportbow.util.Color.colorize;
 
 public final class BowManager {
 

@@ -1,16 +1,14 @@
 package me.luucka.teleportbow;
 
-import me.luucka.teleportbow.commands.TpBowCommand;
-import me.luucka.teleportbow.listeners.MainListener;
-import me.luucka.teleportbow.listeners.SwapHandListener;
-import me.luucka.teleportbow.utils.ServerVersion;
+import me.luucka.teleportbow.command.TpBowCommand;
+import me.luucka.teleportbow.listener.MainListener;
+import me.luucka.teleportbow.listener.SwapHandListener;
+import me.luucka.teleportbow.util.ServerVersion;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TeleportBow extends JavaPlugin {
 
 	private static TeleportBow instance;
-
-	private Settings settings;
 
 	@Override
 	public void onEnable() {
@@ -31,7 +29,4 @@ public final class TeleportBow extends JavaPlugin {
 		return instance;
 	}
 
-	public Settings getSettings() {
-		return settings;
-	}
 }

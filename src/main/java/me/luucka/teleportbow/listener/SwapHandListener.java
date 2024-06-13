@@ -1,4 +1,4 @@
-package me.luucka.teleportbow.listeners;
+package me.luucka.teleportbow.listener;
 
 import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.Settings;

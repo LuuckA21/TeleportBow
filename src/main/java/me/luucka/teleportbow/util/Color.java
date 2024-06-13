@@ -1,4 +1,4 @@
-package me.luucka.teleportbow.utils;
+package me.luucka.teleportbow.util;
 
 import net.md_5.bungee.api.ChatColor;
 

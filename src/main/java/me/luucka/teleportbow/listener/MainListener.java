@@ -1,4 +1,4 @@
-package me.luucka.teleportbow.listeners;
+package me.luucka.teleportbow.listener;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;

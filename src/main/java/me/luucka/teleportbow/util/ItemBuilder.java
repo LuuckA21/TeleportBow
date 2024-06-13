@@ -1,4 +1,4 @@
-package me.luucka.teleportbow.utils;
+package me.luucka.teleportbow.util;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import org.bukkit.Bukkit;

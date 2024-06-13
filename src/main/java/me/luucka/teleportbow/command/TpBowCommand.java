@@ -1,4 +1,4 @@
-package me.luucka.teleportbow.commands;
+package me.luucka.teleportbow.command;
 
 import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.Settings;
@@ -10,9 +10,18 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.luucka.teleportbow.utils.Color.colorize;
+import static me.luucka.teleportbow.util.Color.colorize;
 
 public class TpBowCommand implements TabExecutor {
+
+	/*
+
+	TODO: tpbow command
+			/tpbow -> help with usage
+			/tpbow give [player] -> without player give to me, otherwise selected player
+			/tpbow reload -> reload the plugin
+
+	 */
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
