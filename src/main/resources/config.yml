@@ -14,4 +14,5 @@ message:
   reload: "&2Plugin reload!"
   no-console: "&cYou cannot run this command!"
   no-perm: "&cYou do not have the permission!"
-  usage: "&cUsage: /tpbow [reload]"
+  usage: "&aUsage:"
+  player-not-found: "&cThe player &7{player} &cdoes not exists"

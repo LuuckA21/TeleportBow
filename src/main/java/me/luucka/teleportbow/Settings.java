@@ -30,7 +30,10 @@ public class Settings {
 
 	public static String USAGE;
 
+	public static String PLAYER_NOT_FOUND;
+
 	public static void init() {
+		TeleportBow.getInstance().saveDefaultConfig();
 		TeleportBow.getInstance().reloadConfig();
 		BOW_NAME = TeleportBow.getInstance().getConfig().getString("bow.name");
 		BOW_LORE = TeleportBow.getInstance().getConfig().getStringList("bow.lore");
@@ -44,7 +47,8 @@ public class Settings {
 		RELOAD = PREFIX + TeleportBow.getInstance().getConfig().getString("message.reload");
 		NO_CONSOLE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-console");
 		NO_PERM = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-perm");
-		USAGE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.usage", "&cUsage: /tpbow [reload]");
+		USAGE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.usage");
+		PLAYER_NOT_FOUND = PREFIX + TeleportBow.getInstance().getConfig().getString("message.player-not-found");
 	}
 
 	private static String _getPrefix() {
