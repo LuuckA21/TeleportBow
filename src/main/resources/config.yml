@@ -16,3 +16,5 @@ message:
   no-perm: "&cYou do not have the permission!"
   usage: "&aUsage:"
   player-not-found: "&cThe player &7{player} &cdoes not exists"
+
+check-for-updates: true
