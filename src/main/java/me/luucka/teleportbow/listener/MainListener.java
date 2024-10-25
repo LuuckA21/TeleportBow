@@ -24,7 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
-public class MainListener implements Listener {
+public final class MainListener implements Listener {
 
 	private final Multimap<UUID, Integer> tpArrows = ArrayListMultimap.create();
 
