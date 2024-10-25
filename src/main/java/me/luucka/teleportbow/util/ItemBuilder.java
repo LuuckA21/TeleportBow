@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * This class help you to create a new {@link ItemStack} from a {@link Material}.
  */
-public class ItemBuilder {
+public final class ItemBuilder {
 
 	private static final ItemFactory ITEM_FACTORY;
 
@@ -146,7 +146,7 @@ public class ItemBuilder {
 		return this;
 	}
 
-	public static ItemStack setMetadata(final ItemStack item, final String key, final String value) {
+	private static ItemStack setMetadata(final ItemStack item, final String key, final String value) {
 		final boolean remove = value == null || value.isEmpty();
 		final ItemStack clone = new ItemStack(item);
 
