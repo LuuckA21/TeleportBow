@@ -38,7 +38,7 @@ public final class Settings {
 
 	public static boolean CHECK_FOR_UPDATES = true;
 
-	public static void init() {
+	public static void load() {
 		TeleportBow.getInstance().saveDefaultConfig();
 		TeleportBow.getInstance().reloadConfig();
 		BOW_NAME = TeleportBow.getInstance().getConfig().getString("bow.name");

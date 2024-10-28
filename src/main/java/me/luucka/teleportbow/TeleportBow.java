@@ -15,7 +15,7 @@ public final class TeleportBow extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		Settings.init();
+		Settings.load();
 
 		if (Settings.CHECK_FOR_UPDATES) checkForUpdates();
 

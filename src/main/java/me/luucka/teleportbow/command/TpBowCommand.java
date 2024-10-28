@@ -59,7 +59,7 @@ public class TpBowCommand implements TabExecutor {
 					player.sendMessage(colorize(Settings.NO_PERM));
 					return true;
 				}
-				Settings.init();
+				Settings.load();
 				player.sendMessage(colorize(Settings.RELOAD));
 			}
 		}
