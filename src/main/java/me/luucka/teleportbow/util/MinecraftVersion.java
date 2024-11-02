@@ -71,7 +71,7 @@ public final class MinecraftVersion {
 		 * @return
 		 * @throws RuntimeException if number not found
 		 */
-		protected static V parse(int number) {
+		private static V parse(int number) {
 			for (final V v : values())
 				if (v.minorVersionNumber == number)
 					return v;
@@ -158,7 +158,7 @@ public final class MinecraftVersion {
 		final String bukkitVersion = Bukkit.getBukkitVersion(); // 1.20.6-R0.1-SNAPSHOT
 		final String versionString = bukkitVersion.split("\\-")[0]; // 1.20.6
 		final String[] versions = versionString.split("\\.");
-		
+
 		if (versions.length != 2 && versions.length != 3) {
 			throw new RuntimeException("Foundation cannot read Bukkit version '" + bukkitVersion + "', expected '-' and a version number");
 		}
