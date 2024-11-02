@@ -1,7 +1,5 @@
 package me.luucka.teleportbow.listener;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.Settings;
 import me.luucka.teleportbow.TeleportBow;
@@ -22,11 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.UUID;
-
 public final class MainListener implements Listener {
-
-	private final Multimap<UUID, Integer> tpArrows = ArrayListMultimap.create();
 
 	@EventHandler
 	public void onJoin(final PlayerJoinEvent event) {
@@ -37,7 +31,7 @@ public final class MainListener implements Listener {
 
 	@EventHandler
 	public void onQuit(final PlayerQuitEvent event) {
-		tpArrows.removeAll(event.getPlayer().getUniqueId());
+		BowManager.getTpArrow().removeAll(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
@@ -53,14 +47,14 @@ public final class MainListener implements Listener {
 		if (bow == null) return;
 		if (!BowManager.checkBow(bow)) return;
 
-		tpArrows.put(player.getUniqueId(), entityId);
+		BowManager.getTpArrow().put(player.getUniqueId(), entityId);
 
 		Bukkit.getScheduler().runTask(TeleportBow.getInstance(), () -> player.getInventory().setItem(Settings.ARROW_SLOT, new ItemStack(Material.ARROW, 1)));
 
 		(new BukkitRunnable() {
 			@Override
 			public void run() {
-				tpArrows.remove(player.getUniqueId(), entityId);
+				BowManager.getTpArrow().remove(player.getUniqueId(), entityId);
 			}
 		}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 600L);
 	}
@@ -75,7 +69,7 @@ public final class MainListener implements Listener {
 		final Player player = (Player) event.getEntity().getShooter();
 		final int entityId = event.getEntity().getEntityId();
 
-		if (!tpArrows.get(player.getUniqueId()).contains(entityId)) return;
+		if (!BowManager.getTpArrow().get(player.getUniqueId()).contains(entityId)) return;
 
 		final Location location = event.getEntity().getLocation();
 		location.setYaw(player.getLocation().getYaw());
@@ -89,7 +83,7 @@ public final class MainListener implements Listener {
 	public void onPlayerFallAfterTeleport(final EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			final Player player = (Player) event.getEntity();
-			if (tpArrows.containsKey(player.getUniqueId())) {
+			if (BowManager.getTpArrow().containsKey(player.getUniqueId())) {
 				event.setCancelled(true);
 			}
 		}
