@@ -1,6 +1,7 @@
 package me.luucka.teleportbow.util;
 
 import de.tr7zw.changeme.nbtapi.NBT;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFactory;
@@ -98,7 +99,9 @@ public final class ItemBuilder {
 	 * This Method does silently ignore double set itemFlags.
 	 */
 	public ItemBuilder hideAttributes() {
-		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_8)) {
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		}
 		return this;
 	}
 
@@ -108,7 +111,9 @@ public final class ItemBuilder {
 	 * This Method does silently ignore double set itemFlags.
 	 */
 	public ItemBuilder hideUnbreakable() {
-		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_8)) {
+			meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		}
 		return this;
 	}
 
@@ -118,7 +123,7 @@ public final class ItemBuilder {
 	 * @param unbreakable true if set unbreakable
 	 */
 	public ItemBuilder setUnbreakable(final boolean unbreakable) {
-		if (ServerVersion.MINOR >= 11) {
+		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_11)) {
 			meta.setUnbreakable(unbreakable);
 		} else {
 			try {
@@ -150,15 +155,28 @@ public final class ItemBuilder {
 		final boolean remove = value == null || value.isEmpty();
 		final ItemStack clone = new ItemStack(item);
 
-		return NBT.modify(clone, tag -> {
-			if (remove) {
-				if (tag.hasTag(key))
-					tag.removeKey(key);
-			} else
-				tag.setString(key, value);
+		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_8)) {
+			return NBT.modify(clone, tag -> {
+				if (remove) {
+					if (tag.hasTag(key))
+						tag.removeKey(key);
+				} else
+					tag.setString(key, value);
 
-			return clone;
-		});
+				return clone;
+			});
+		} else {
+			NBTItem nbtItem = new NBTItem(clone);
+			if (remove) {
+				if (nbtItem.hasTag(key)) {
+					nbtItem.removeKey(key);
+				}
+			} else {
+				nbtItem.setString(key, value);
+			}
+
+			return nbtItem.getItem();
+		}
 	}
 
 }

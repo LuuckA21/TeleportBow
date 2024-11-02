@@ -15,7 +15,7 @@ public final class Color {
 	}
 
 	public static String colorize(String input) {
-		if (ServerVersion.MINOR >= 16) {
+		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_16)) {
 			Matcher match = pattern.matcher(input);
 			while (match.find()) {
 				String color = input.substring(match.start(), match.end());
