@@ -160,7 +160,7 @@ public final class MinecraftVersion {
 		final String[] versions = versionString.split("\\.");
 
 		if (versions.length != 2 && versions.length != 3) {
-			throw new RuntimeException("Foundation cannot read Bukkit version '" + bukkitVersion + "', expected '-' and a version number");
+			throw new RuntimeException("TeleportBow cannot read Bukkit version '" + bukkitVersion + "', expected '-' and a version number");
 		}
 
 		final int version = Integer.parseInt(versions[1]); // 20

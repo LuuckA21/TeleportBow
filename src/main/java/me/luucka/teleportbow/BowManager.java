@@ -3,6 +3,9 @@ package me.luucka.teleportbow;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import de.tr7zw.changeme.nbtapi.NBT;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.luucka.teleportbow.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,16 +15,11 @@ import java.util.UUID;
 
 import static me.luucka.teleportbow.util.Color.colorize;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BowManager {
 
-	private BowManager() {
-	}
-
-	private static final Multimap<UUID, Integer> TP_ARROW = MultimapBuilder.hashKeys().arrayListValues().build();
-
-	public static Multimap<UUID, Integer> getTpArrow() {
-		return TP_ARROW;
-	}
+	@Getter
+	private static final Multimap<UUID, Integer> tpArrows = MultimapBuilder.hashKeys().arrayListValues().build();
 
 	public static ItemStack createBow() {
 		return new ItemBuilder(Material.BOW)
@@ -39,14 +37,14 @@ public final class BowManager {
 		player.getInventory().setItem(Settings.ARROW_SLOT, new ItemStack(Material.ARROW, 1));
 	}
 
-	public static boolean checkBow(final ItemStack bow) {
+	public static boolean isValidBow(final ItemStack bow) {
 		if (bow.getType() != Material.BOW) return false;
 
 		String key = NBT.get(bow, nbt -> {
 			return nbt.getString("tpbow");
 		});
 
-		if (key == null) return false;
+		if (key == null || key.isEmpty()) return false;
 		return key.equals("TpBow");
 	}
 }

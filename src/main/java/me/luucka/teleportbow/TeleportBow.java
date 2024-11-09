@@ -1,21 +1,22 @@
 package me.luucka.teleportbow;
 
+import lombok.Getter;
 import me.luucka.teleportbow.command.TpBowCommand;
-import me.luucka.teleportbow.listener.MainListener;
-import me.luucka.teleportbow.listener.SwapHandListener;
+import me.luucka.teleportbow.listener.TeleportBowListener;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import me.luucka.teleportbow.util.UpdateChecker;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TeleportBow extends JavaPlugin {
 
+	@Getter
 	private static TeleportBow instance;
 
 	@Override
 	public void onEnable() {
 		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_7)) {
 			getLogger().severe("Minecraft version " + MinecraftVersion.getFullVersion() + " is not supported!");
-			getLogger().severe("Use at least version 1.7.10");
+			getLogger().severe("Use at least Minecraft version " + MinecraftVersion.V.v1_7);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -30,15 +31,7 @@ public final class TeleportBow extends JavaPlugin {
 
 		getCommand("tpbow").setExecutor(new TpBowCommand());
 
-		getServer().getPluginManager().registerEvents(new MainListener(), this);
-
-		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_9)) {
-			getServer().getPluginManager().registerEvents(new SwapHandListener(), this);
-		}
-	}
-
-	public static TeleportBow getInstance() {
-		return instance;
+		getServer().getPluginManager().registerEvents(new TeleportBowListener(), this);
 	}
 
 	private void checkForUpdates() {

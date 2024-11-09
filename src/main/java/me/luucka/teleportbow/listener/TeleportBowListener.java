@@ -17,21 +17,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public final class MainListener implements Listener {
+public final class TeleportBowListener implements Listener {
 
-	@EventHandler
-	public void onJoin(final PlayerJoinEvent event) {
-		if (Settings.GIVE_ON_JOIN) {
-			BowManager.giveBow(event.getPlayer());
-		}
+	public TeleportBowListener() {
+		registerEvent(new SwapHandListener());
 	}
 
-	@EventHandler
-	public void onQuit(final PlayerQuitEvent event) {
-		BowManager.getTpArrow().removeAll(event.getPlayer().getUniqueId());
+	private void registerEvent(Listener listener) {
+		try {
+			Class.forName("org.bukkit.event.player.PlayerSwapHandItemsEvent");
+			TeleportBow.getInstance().getServer().getPluginManager().registerEvents(listener, TeleportBow.getInstance());
+		} catch (final ClassNotFoundException ignored) {
+		}
 	}
 
 	@EventHandler
@@ -45,16 +46,16 @@ public final class MainListener implements Listener {
 		final int entityId = event.getProjectile().getEntityId();
 
 		if (bow == null) return;
-		if (!BowManager.checkBow(bow)) return;
+		if (!BowManager.isValidBow(bow)) return;
 
-		BowManager.getTpArrow().put(player.getUniqueId(), entityId);
+		BowManager.getTpArrows().put(player.getUniqueId(), entityId);
 
 		Bukkit.getScheduler().runTask(TeleportBow.getInstance(), () -> player.getInventory().setItem(Settings.ARROW_SLOT, new ItemStack(Material.ARROW, 1)));
 
 		(new BukkitRunnable() {
 			@Override
 			public void run() {
-				BowManager.getTpArrow().remove(player.getUniqueId(), entityId);
+				BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
 			}
 		}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 600L);
 	}
@@ -69,13 +70,14 @@ public final class MainListener implements Listener {
 		final Player player = (Player) event.getEntity().getShooter();
 		final int entityId = event.getEntity().getEntityId();
 
-		if (!BowManager.getTpArrow().get(player.getUniqueId()).contains(entityId)) return;
+		if (!BowManager.getTpArrows().get(player.getUniqueId()).contains(entityId)) return;
 
 		final Location location = event.getEntity().getLocation();
 		location.setYaw(player.getLocation().getYaw());
 		location.setPitch(player.getLocation().getPitch());
 
 		event.getEntity().remove();
+
 		player.teleport(location);
 	}
 
@@ -83,16 +85,28 @@ public final class MainListener implements Listener {
 	public void onPlayerFallAfterTeleport(final EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			final Player player = (Player) event.getEntity();
-			if (BowManager.getTpArrow().containsKey(player.getUniqueId())) {
+			if (BowManager.getTpArrows().containsKey(player.getUniqueId())) {
 				event.setCancelled(true);
 			}
 		}
 	}
 
 	@EventHandler
+	public void onJoin(final PlayerJoinEvent event) {
+		if (Settings.GIVE_ON_JOIN) {
+			BowManager.giveBow(event.getPlayer());
+		}
+	}
+
+	@EventHandler
+	public void onQuit(final PlayerQuitEvent event) {
+		BowManager.getTpArrows().removeAll(event.getPlayer().getUniqueId());
+	}
+
+	@EventHandler
 	public void onItemDrop(final PlayerDropItemEvent event) {
 		if (!Settings.CAN_BE_DROPPED) {
-			if (BowManager.checkBow(event.getItemDrop().getItemStack())) {
+			if (BowManager.isValidBow(event.getItemDrop().getItemStack())) {
 				event.setCancelled(true);
 			}
 		}
@@ -103,9 +117,32 @@ public final class MainListener implements Listener {
 		if (!Settings.CAN_BE_MOVED_IN_INVENTORY) {
 			final ItemStack item = event.getCurrentItem();
 			if (item == null) return;
-			if (BowManager.checkBow(item)) {
+			if (BowManager.isValidBow(item)) {
 				event.setCancelled(true);
 			}
+		}
+	}
+
+	class SwapHandListener implements Listener {
+
+		@EventHandler
+		public void onSwapHandItem(final PlayerSwapHandItemsEvent event) {
+			final ItemStack mainHand = event.getMainHandItem();
+			final ItemStack offHand = event.getOffHandItem();
+
+			if (mainHand == null && offHand == null) return;
+
+			boolean isMainHand = false;
+			if (mainHand != null) {
+				if (BowManager.isValidBow(mainHand)) isMainHand = true;
+			}
+
+			boolean isOffHand = false;
+			if (offHand != null) {
+				if (BowManager.isValidBow(offHand)) isOffHand = true;
+			}
+
+			if (!Settings.CAN_BE_SWAPPED && (isMainHand || isOffHand)) event.setCancelled(true);
 		}
 	}
 

@@ -18,12 +18,12 @@ public class SwapHandListener implements Listener {
 
 		boolean isMainHand = false;
 		if (mainHand != null) {
-			if (BowManager.checkBow(mainHand)) isMainHand = true;
+			if (BowManager.isValidBow(mainHand)) isMainHand = true;
 		}
 
 		boolean isOffHand = false;
 		if (offHand != null) {
-			if (BowManager.checkBow(offHand)) isOffHand = true;
+			if (BowManager.isValidBow(offHand)) isOffHand = true;
 		}
 
 		if (!Settings.CAN_BE_SWAPPED && (isMainHand || isOffHand)) event.setCancelled(true);
