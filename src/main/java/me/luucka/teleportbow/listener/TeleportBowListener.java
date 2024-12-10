@@ -79,6 +79,8 @@ public final class TeleportBowListener implements Listener {
 		event.getEntity().remove();
 
 		player.teleport(location);
+
+		BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
 	}
 
 	@EventHandler
@@ -123,7 +125,7 @@ public final class TeleportBowListener implements Listener {
 		}
 	}
 
-	class SwapHandListener implements Listener {
+	static class SwapHandListener implements Listener {
 
 		@EventHandler
 		public void onSwapHandItem(final PlayerSwapHandItemsEvent event) {
