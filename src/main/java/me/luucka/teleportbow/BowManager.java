@@ -1,7 +1,7 @@
 package me.luucka.teleportbow;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import static me.luucka.teleportbow.util.Color.colorize;
 public final class BowManager {
 
 	@Getter
-	private static final Multimap<UUID, Integer> tpArrows = MultimapBuilder.hashKeys().arrayListValues().build();
+	private static final Multimap<UUID, Integer> tpArrows = ArrayListMultimap.create();
 
 	public static ItemStack createBow() {
 		return new ItemBuilder(Material.BOW)
