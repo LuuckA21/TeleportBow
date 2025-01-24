@@ -1,4 +1,5 @@
 bow:
+  type: "BOW"
   name: "&b&lTeleport&3&lBow"
   lore:
     - "&7Shoot an arrow to teleport"

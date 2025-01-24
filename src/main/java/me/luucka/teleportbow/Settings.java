@@ -1,5 +1,8 @@
 package me.luucka.teleportbow;
 
+import me.luucka.teleportbow.util.MinecraftVersion;
+import org.bukkit.Material;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -7,6 +10,8 @@ public final class Settings {
 
 	private Settings() {
 	}
+
+	public static Material BOW_TYPE = Material.BOW;
 
 	public static String BOW_NAME = "&b&lTeleport&3&lBow";
 
@@ -40,7 +45,27 @@ public final class Settings {
 
 	public static void load() {
 		TeleportBow.getInstance().saveDefaultConfig();
+
+		newFieldsFromV171ToV180();
+
 		TeleportBow.getInstance().reloadConfig();
+
+		try {
+			final String bowTypeConfig = TeleportBow.getInstance().getConfig().getString("bow.type", "BOW").toUpperCase();
+			final Material bowType = Material.valueOf(bowTypeConfig);
+
+			// Check compatibility based on Minecraft version
+			if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
+				// For versions older than 1.14, only allow BOW
+				BOW_TYPE = Material.BOW;
+			} else {
+				// For versions 1.14 and newer, allow BOW or CROSSBOW
+				BOW_TYPE = (bowType == Material.BOW || bowType == Material.CROSSBOW) ? bowType : Material.BOW;
+			}
+		} catch (IllegalArgumentException e) {
+			BOW_TYPE = Material.BOW;
+		}
+
 		BOW_NAME = TeleportBow.getInstance().getConfig().getString("bow.name");
 		BOW_LORE = TeleportBow.getInstance().getConfig().getStringList("bow.lore");
 		BOW_SLOT = TeleportBow.getInstance().getConfig().getInt("bow.slot");
@@ -62,8 +87,15 @@ public final class Settings {
 
 	private static String _getPrefix() {
 		String prefix = TeleportBow.getInstance().getConfig().getString("message.prefix");
-		if (prefix == null) return "";
-		return prefix.isEmpty() ? "" : prefix + " ";
+		return (prefix == null || prefix.isEmpty()) ? "" : prefix + " ";
+	}
+
+	private static void newFieldsFromV171ToV180() {
+		if (!TeleportBow.getInstance().getConfig().isSet("bow.type")) {
+			TeleportBow.getInstance().getConfig().set("bow.type", "BOW");
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'bow.type' with default value 'BOW'.");
+		}
 	}
 
 }

@@ -41,6 +41,10 @@ public final class TeleportBowListener implements Listener {
 			return;
 		}
 
+		if (event.getProjectile().getType() != EntityType.ARROW) {
+			return;
+		}
+
 		final Player player = (Player) event.getEntity();
 		final ItemStack bow = event.getBow();
 		final int entityId = event.getProjectile().getEntityId();
