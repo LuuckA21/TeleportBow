@@ -84,6 +84,8 @@ public final class TeleportBowListener implements Listener {
 
 		player.teleport(location);
 
+		player.playSound(player.getLocation(), Settings.TELEPORT_SOUND_TYPE, Settings.TELEPORT_SOUND_VOLUME, Settings.TELEPORT_SOUND_PITCH);
+
 		BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
 	}
 

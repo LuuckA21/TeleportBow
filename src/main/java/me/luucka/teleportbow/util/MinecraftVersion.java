@@ -1,5 +1,6 @@
 package me.luucka.teleportbow.util;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 /**
@@ -10,20 +11,14 @@ public final class MinecraftVersion {
 	/**
 	 * The wrapper representation of the version.
 	 */
+	@Getter
 	private static V current;
 
 	/**
 	 * The subversion such as 8 in 1.8.8 or 6 in 1.20.6.
 	 */
+	@Getter
 	private static int subversion;
-
-	public static V getCurrent() {
-		return current;
-	}
-
-	public static int getSubversion() {
-		return subversion;
-	}
 
 	/**
 	 * The version wrapper.

@@ -2,14 +2,22 @@ package me.luucka.teleportbow;
 
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.Sound;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public final class Settings {
 
 	private Settings() {
 	}
+
+	//------------------------------------------------------------------------------------------------------------------
+	// BOW
+	//------------------------------------------------------------------------------------------------------------------
 
 	public static Material BOW_TYPE = Material.BOW;
 
@@ -29,6 +37,20 @@ public final class Settings {
 
 	public static boolean CAN_BE_SWAPPED = true;
 
+	//------------------------------------------------------------------------------------------------------------------
+	// TELEPORT
+	//------------------------------------------------------------------------------------------------------------------
+
+	public static Sound TELEPORT_SOUND_TYPE = Sound.ENTITY_PLAYER_TELEPORT;
+
+	public static float TELEPORT_SOUND_VOLUME = 1.0F;
+
+	public static float TELEPORT_SOUND_PITCH = 1.0F;
+
+	//------------------------------------------------------------------------------------------------------------------
+	// MESSAGE
+	//------------------------------------------------------------------------------------------------------------------
+
 	public static String PREFIX = "&7[&b&lTeleport&3&lBow&7] ";
 
 	public static String RELOAD = "&2Plugin reload!";
@@ -47,6 +69,7 @@ public final class Settings {
 		TeleportBow.getInstance().saveDefaultConfig();
 
 		newFieldsFromV171ToV180();
+		newFieldsFromV181ToV190();
 
 		TeleportBow.getInstance().reloadConfig();
 
@@ -75,6 +98,19 @@ public final class Settings {
 		CAN_BE_DROPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-swapped");
 
+		try {
+			final String teleportSoundTypeConfig = TeleportBow.getInstance().getConfig().getString("teleport.sound.type", "ENTITY_PLAYER_TELEPORT").toUpperCase();
+			if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_21) && MinecraftVersion.getSubversion() >= 3) {
+				Registry.SOUNDS.get(NamespacedKey.fromString(teleportSoundTypeConfig.toLowerCase(Locale.ROOT)));
+			} else {
+				TELEPORT_SOUND_TYPE = Sound.valueOf(teleportSoundTypeConfig);
+			}
+		} catch (IllegalArgumentException e) {
+			TELEPORT_SOUND_TYPE = Sound.ENTITY_PLAYER_TELEPORT;
+		}
+		TELEPORT_SOUND_VOLUME = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.volume", 1.0D);
+		TELEPORT_SOUND_PITCH = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.pitch", 1.0D);
+
 		PREFIX = _getPrefix();
 		RELOAD = PREFIX + TeleportBow.getInstance().getConfig().getString("message.reload");
 		NO_CONSOLE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-console");
@@ -95,6 +131,26 @@ public final class Settings {
 			TeleportBow.getInstance().getConfig().set("bow.type", "BOW");
 			TeleportBow.getInstance().saveConfig();
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'bow.type' with default value 'BOW'.");
+		}
+	}
+
+	private static void newFieldsFromV181ToV190() {
+		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.type")) {
+			TeleportBow.getInstance().getConfig().set("teleport.sound.type", "ENTITY_PLAYER_TELEPORT");
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.type' with default value 'ENTITY_PLAYER_TELEPORT'.");
+		}
+
+		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.volume")) {
+			TeleportBow.getInstance().getConfig().set("teleport.sound.volume", 1.0F);
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.volume' with default value '1.0'.");
+		}
+
+		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.pitch")) {
+			TeleportBow.getInstance().getConfig().set("teleport.sound.pitch", 1.0F);
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.pitch' with default value '1.0'.");
 		}
 	}
 
