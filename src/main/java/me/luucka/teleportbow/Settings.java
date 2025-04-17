@@ -137,21 +137,20 @@ public final class Settings {
 	private static void newFieldsFromV181ToV190() {
 		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.type")) {
 			TeleportBow.getInstance().getConfig().set("teleport.sound.type", "ENTITY_PLAYER_TELEPORT");
-			TeleportBow.getInstance().saveConfig();
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.type' with default value 'ENTITY_PLAYER_TELEPORT'.");
 		}
 
 		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.volume")) {
 			TeleportBow.getInstance().getConfig().set("teleport.sound.volume", 1.0F);
-			TeleportBow.getInstance().saveConfig();
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.volume' with default value '1.0'.");
 		}
 
 		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.pitch")) {
 			TeleportBow.getInstance().getConfig().set("teleport.sound.pitch", 1.0F);
-			TeleportBow.getInstance().saveConfig();
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.pitch' with default value '1.0'.");
 		}
+		
+		TeleportBow.getInstance().saveConfig();
 	}
 
 }
