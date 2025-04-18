@@ -2,13 +2,10 @@ package me.luucka.teleportbow;
 
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.Sound;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public final class Settings {
 
@@ -86,6 +83,7 @@ public final class Settings {
 				BOW_TYPE = (bowType == Material.BOW || bowType == Material.CROSSBOW) ? bowType : Material.BOW;
 			}
 		} catch (IllegalArgumentException e) {
+			TeleportBow.getInstance().getLogger().warning("Invalid Material name. Use BOW as default.");
 			BOW_TYPE = Material.BOW;
 		}
 
@@ -100,12 +98,9 @@ public final class Settings {
 
 		try {
 			final String teleportSoundTypeConfig = TeleportBow.getInstance().getConfig().getString("teleport.sound.type", "ENTITY_PLAYER_TELEPORT").toUpperCase();
-			if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_21) && MinecraftVersion.getSubversion() >= 3) {
-				TELEPORT_SOUND_TYPE = Registry.SOUNDS.get(NamespacedKey.fromString(teleportSoundTypeConfig.toLowerCase(Locale.ROOT)));
-			} else {
-				TELEPORT_SOUND_TYPE = Sound.valueOf(teleportSoundTypeConfig);
-			}
+			TELEPORT_SOUND_TYPE = Sound.valueOf(teleportSoundTypeConfig);
 		} catch (IllegalArgumentException e) {
+			TeleportBow.getInstance().getLogger().warning("Invalid Sound name. Use ENTITY_PLAYER_TELEPORT as default.");
 			TELEPORT_SOUND_TYPE = Sound.ENTITY_PLAYER_TELEPORT;
 		}
 		TELEPORT_SOUND_VOLUME = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.volume", 1.0D);
