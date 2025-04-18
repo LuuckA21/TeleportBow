@@ -6,6 +6,7 @@ import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -84,7 +85,10 @@ public final class TeleportBowListener implements Listener {
 
 		player.teleport(location);
 
-		player.playSound(player.getLocation(), Settings.TELEPORT_SOUND_TYPE, Settings.TELEPORT_SOUND_VOLUME, Settings.TELEPORT_SOUND_PITCH);
+		player.playSound(location, Settings.TELEPORT_SOUND_TYPE, Settings.TELEPORT_SOUND_VOLUME, Settings.TELEPORT_SOUND_PITCH);
+
+//		location.getWorld().spawnParticle(Particle.FLAME, location, 100, 0.5, 1, 0.5, 0.01);
+		startTornado(location);
 
 		BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
 	}
@@ -152,6 +156,34 @@ public final class TeleportBowListener implements Listener {
 
 			if (!Settings.CAN_BE_SWAPPED && (isMainHand || isOffHand)) event.setCancelled(true);
 		}
+	}
+
+	private void startTornado(Location center) {
+		new BukkitRunnable() {
+			double radius = 0.5;
+			double height = 0;
+			double angle = 0;
+
+			@Override
+			public void run() {
+				// Spiral movement
+				for (int i = 0; i < 3; i++) { // multiple strands
+					double x = radius * Math.cos(angle + i * Math.PI * 2 / 3);
+					double z = radius * Math.sin(angle + i * Math.PI * 2 / 3);
+					Location loc = center.clone().add(x, height, z);
+					center.getWorld().spawnParticle(Particle.CLOUD, loc, 0, 0, 0, 0, 0);
+				}
+
+				angle += Math.PI / 8;
+				height += 0.05;
+				radius += 0.01;
+
+				// Reset or stop after some height
+				if (height > 5) {
+					cancel();
+				}
+			}
+		}.runTaskTimerAsynchronously(TeleportBow.getInstance(), 0L, 2L);
 	}
 
 }
