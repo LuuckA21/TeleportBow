@@ -44,6 +44,8 @@ public final class Settings {
 
 	public static float TELEPORT_SOUND_PITCH = 1.0F;
 
+	public static boolean TELEPORT_SOUND_CHECK_PERM = false;
+
 	//------------------------------------------------------------------------------------------------------------------
 	// MESSAGE
 	//------------------------------------------------------------------------------------------------------------------
@@ -105,6 +107,7 @@ public final class Settings {
 		}
 		TELEPORT_SOUND_VOLUME = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.volume", 1.0D);
 		TELEPORT_SOUND_PITCH = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.pitch", 1.0D);
+		TELEPORT_SOUND_CHECK_PERM = TeleportBow.getInstance().getConfig().getBoolean("teleport.sound.check-perm");
 
 		PREFIX = _getPrefix();
 		RELOAD = PREFIX + TeleportBow.getInstance().getConfig().getString("message.reload");
@@ -143,6 +146,11 @@ public final class Settings {
 		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.pitch")) {
 			TeleportBow.getInstance().getConfig().set("teleport.sound.pitch", 1.0F);
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.pitch' with default value '1.0'.");
+		}
+
+		if (!TeleportBow.getInstance().getConfig().isSet("teleport.sound.check-perm")) {
+			TeleportBow.getInstance().getConfig().set("teleport.sound.check-perm", false);
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.check-perm' with default value 'false'.");
 		}
 
 		TeleportBow.getInstance().saveConfig();

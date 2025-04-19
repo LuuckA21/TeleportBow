@@ -3,6 +3,7 @@ package me.luucka.teleportbow.command;
 import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.Settings;
 import me.luucka.teleportbow.TeleportBow;
+import me.luucka.teleportbow.data.ParticleEffectsData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -60,6 +61,7 @@ public class TpBowCommand implements TabExecutor {
 					return true;
 				}
 				Settings.load();
+				ParticleEffectsData.load();
 				player.sendMessage(colorize(Settings.RELOAD));
 			}
 		}
