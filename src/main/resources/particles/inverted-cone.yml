@@ -1,5 +1,5 @@
 # Name of the particle effect
-name: "Cone"
+name: "Inverted Cone"
 
 # Particle type
 # See list here: https://github.com/CryptoMorin/XSeries/blob/master/core/src/main/java/com/cryptomorin/xseries/particles/XParticle.java
@@ -11,4 +11,4 @@ particle: "FLAME"
 mode: "SCRIPT"
 
 # Script file
-script-file: "cone.js"
+script-file: "inverted-cone.js"

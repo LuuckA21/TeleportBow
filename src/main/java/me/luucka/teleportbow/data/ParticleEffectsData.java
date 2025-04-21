@@ -72,7 +72,7 @@ public final class ParticleEffectsData extends YamlFile {
 		}
 	}
 
-	enum Mode {
+	public enum Mode {
 		SIMPLE,
 		SCRIPT
 	}
@@ -81,4 +81,11 @@ public final class ParticleEffectsData extends YamlFile {
 		return Optional.ofNullable(particleEffects.get(effectName));
 	}
 
+	@Override
+	public String toString() {
+		return "Name:" + name +
+				" Particle:" + particle.name() +
+				" Mode:" + mode.name();
+//				" Script:" + script;
+	}
 }

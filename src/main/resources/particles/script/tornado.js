@@ -1,5 +1,4 @@
 var Runnable = Java.type('org.bukkit.scheduler.BukkitRunnable');
-var Particle = Java.type('org.bukkit.Particle');
 
 var radius = 0.5;
 var height = 0;
@@ -12,7 +11,7 @@ var task = new (Java.extend(Runnable, {
             var x = radius * Math.cos(strandAngle);
             var z = radius * Math.sin(strandAngle);
             var loc = location.clone().add(x, height, z);
-            location.getWorld().spawnParticle(Particle.CLOUD, loc, 0, 0, 0, 0, 0);
+            location.getWorld().spawnParticle(particle, loc, 0, 0, 0, 0, 0);
         }
 
         angle += Math.PI / 8;
