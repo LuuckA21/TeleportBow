@@ -28,7 +28,6 @@ public class YamlFile {
 			config.save(file);
 		} catch (IOException e) {
 			e.printStackTrace();
-			TeleportBow.getInstance().getLogger().severe("Error saving " + file.getName());
 		}
 	}
 

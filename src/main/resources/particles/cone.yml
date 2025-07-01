@@ -8,7 +8,7 @@ particle: "FLAME"
 # Mode
 #    SIMPLE -> spawn a simple particle
 #    SCRIPT -> run the script in the js file
-mode: "SCRIPT"
+mode: "SIMPLE"
 
 # Script file
 script-file: "cone.js"

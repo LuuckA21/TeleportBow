@@ -30,16 +30,8 @@ public class TestCommand implements TabExecutor {
 			return true;
 		}
 		ParticleEffectsData data = particleEffectsData.get();
-		if (data.getMode() == ParticleEffectsData.Mode.SIMPLE) {
-			player.getLocation().getWorld().spawnParticle(data.getParticle(), player.getLocation(), 10, 0, 0, 0, 0);
-		} else {
-			JavaScriptManager.getInstance().eval(data, player, player.getLocation());
-		}
+		JavaScriptManager.getInstance().eval(data, player, player.getLocation());
 
-//		player.getLocation().getWorld().spawnParticle(data.getParticle(), player.getLocation(), 10, 0, 0, 0, 0);
-		player.playEffect();
-
-		player.sendMessage(data.toString());
 		return true;
 	}
 

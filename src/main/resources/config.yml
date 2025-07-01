@@ -12,7 +12,7 @@ bow:
 
 teleport:
   sound:
-    type: "ENTITY_ENDERMAN_TELEPORT"
+    type: "ENTITY_PLAYER_TELEPORT"
     volume: 1.0
     pitch: 1.0
     check-perm: false

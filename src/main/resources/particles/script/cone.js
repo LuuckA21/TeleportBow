@@ -1,8 +1,8 @@
 var Runnable = Java.type('org.bukkit.scheduler.BukkitRunnable');
+// var Particle = Java.type('org.bukkit.Particle');
 
 var height = 0;
 var maxHeight = 5;
-var baseRadius = 2.5;
 var angleStep = Math.PI / 16;
 
 var task = new (Java.extend(Runnable, {
@@ -12,7 +12,7 @@ var task = new (Java.extend(Runnable, {
             return;
         }
 
-        var radius = baseRadius * (1 - height / maxHeight);
+        var radius = height * 0.5;
 
         for (var angle = 0; angle < 2 * Math.PI; angle += angleStep) {
             var x = radius * Math.cos(angle);

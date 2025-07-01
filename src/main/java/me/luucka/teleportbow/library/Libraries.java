@@ -24,14 +24,23 @@ public enum Libraries {
 			"com.github.cryptomorin",
 			"me.luucka.teleportbow.lib.xseries",
 			0
+	),
+	ASM(
+			"org.ow2.asm",
+			"asm-util",
+			"9.7.1",
+			"asm-util",
+			"org.ow2.asm",
+			"me.luucka.teleportbow.lib.asm",
+			0
 	);
-	//	ASM(
-//			"org.ow2.asm",
-//			"asm-util",
-//			"9.7.1",
-//			"asm-util",
-//			"org.ow2.asm",
-//			"me.luucka.teleportbow.lib.asm",
+//	NBT_API(
+//			"de.tr7zw",
+//			"item-nbt-api",
+//			"2.15.0",
+//			"item-nbt-api",
+//			"de.tr7zw.changeme.nbtapi",
+//			"me.luucka.teleportbow.lib.nbtapi",
 //			0
 //	);
 

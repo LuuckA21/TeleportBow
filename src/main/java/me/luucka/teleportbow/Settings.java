@@ -1,13 +1,11 @@
 package me.luucka.teleportbow;
 
-import com.cryptomorin.xseries.XSound;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public final class Settings {
 
@@ -40,7 +38,7 @@ public final class Settings {
 	// TELEPORT
 	//------------------------------------------------------------------------------------------------------------------
 
-	public static Sound TELEPORT_SOUND_TYPE = XSound.ENTITY_ENDERMAN_TELEPORT.get();
+	public static Sound TELEPORT_SOUND_TYPE = Sound.ENTITY_PLAYER_TELEPORT;
 
 	public static float TELEPORT_SOUND_VOLUME = 1.0F;
 
@@ -100,15 +98,13 @@ public final class Settings {
 		CAN_BE_DROPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-swapped");
 
-//		try {
-//			final String teleportSoundTypeConfig = TeleportBow.getInstance().getConfig().getString("teleport.sound.type", "ENTITY_PLAYER_TELEPORT").toUpperCase();
-//			TELEPORT_SOUND_TYPE = Sound.valueOf(teleportSoundTypeConfig);
-//		} catch (IllegalArgumentException e) {
-//			TeleportBow.getInstance().getLogger().warning("Invalid Sound name. Use ENTITY_PLAYER_TELEPORT as default.");
-//			TELEPORT_SOUND_TYPE = Sound.ENTITY_PLAYER_TELEPORT;
-//		}
-		final Optional<XSound> xSound = XSound.of(TeleportBow.getInstance().getConfig().getString("teleport.sound.type"));
-		TELEPORT_SOUND_TYPE = xSound.isPresent() ? xSound.get().get() : XSound.ENTITY_ENDERMAN_TELEPORT.get();
+		try {
+			final String teleportSoundTypeConfig = TeleportBow.getInstance().getConfig().getString("teleport.sound.type", "ENTITY_PLAYER_TELEPORT").toUpperCase();
+			TELEPORT_SOUND_TYPE = Sound.valueOf(teleportSoundTypeConfig);
+		} catch (IllegalArgumentException e) {
+			TeleportBow.getInstance().getLogger().warning("Invalid Sound name. Use ENTITY_PLAYER_TELEPORT as default.");
+			TELEPORT_SOUND_TYPE = Sound.ENTITY_PLAYER_TELEPORT;
+		}
 		TELEPORT_SOUND_VOLUME = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.volume", 1.0D);
 		TELEPORT_SOUND_PITCH = (float) TeleportBow.getInstance().getConfig().getDouble("teleport.sound.pitch", 1.0D);
 		TELEPORT_SOUND_CHECK_PERM = TeleportBow.getInstance().getConfig().getBoolean("teleport.sound.check-perm");
