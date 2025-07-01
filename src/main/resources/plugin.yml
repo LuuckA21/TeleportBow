@@ -7,8 +7,6 @@ description: Shoot an arrow and teleport
 commands:
   tpbow:
     description: Main command
-  testparticle:
-    description: Test command
 permissions:
   tpbow.*:
     default: op
