@@ -4,12 +4,12 @@ import lombok.Getter;
 import me.luucka.teleportbow.command.TestCommand;
 import me.luucka.teleportbow.command.TpBowCommand;
 import me.luucka.teleportbow.data.ParticleEffectsData;
-import me.luucka.teleportbow.library.LibrarySetup;
 import me.luucka.teleportbow.listener.TeleportBowListener;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import me.luucka.teleportbow.util.UpdateChecker;
 import me.luucka.teleportbow.util.Util;
 import net.byteflux.libby.BukkitLibraryManager;
+import net.byteflux.libby.Library;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -25,7 +25,6 @@ public final class TeleportBow extends JavaPlugin {
 	@Getter
 	private File scriptFolder;
 
-	@Getter
 	private BukkitLibraryManager bukkitLibraryManager;
 
 	@Override
@@ -40,7 +39,7 @@ public final class TeleportBow extends JavaPlugin {
 		instance = this;
 
 		bukkitLibraryManager = new BukkitLibraryManager(this);
-		LibrarySetup.load();
+		loadLibraries();
 
 		Settings.load();
 
@@ -79,6 +78,40 @@ public final class TeleportBow extends JavaPlugin {
 				getLogger().info("Download at: https://www.spigotmc.org/resources/teleportbow.89723/");
 			}
 		});
+	}
+
+	private void loadLibraries() {
+		final Library nashorn = Library.builder()
+				.groupId("org{}openjdk{}nashorn") // "{}" is replaced with ".", useful to avoid unwanted changes made by maven-shade-plugin
+				.artifactId("nashorn-core")
+				.version("15.6")
+				.id("nashorn-core")
+				.build();
+
+		final Library asm = Library.builder()
+				.groupId("org.ow2.asm")
+				.artifactId("asm")
+				.version("7.3.1") // Must match nashorn-core's dependencies
+				.build();
+
+		final Library asmUtil = Library.builder()
+				.groupId("org.ow2.asm")
+				.artifactId("asm-util")
+				.version("7.3.1")
+				.build();
+
+		final Library xSeries = Library.builder()
+				.groupId("com{}github{}cryptomorin") // "{}" is replaced with ".", useful to avoid unwanted changes made by maven-shade-plugin
+				.artifactId("XSeries")
+				.version("13.2.0")
+				.id("XSeries")
+				.build();
+
+		bukkitLibraryManager.addMavenCentral();
+		bukkitLibraryManager.loadLibrary(nashorn);
+		bukkitLibraryManager.loadLibrary(asm);
+		bukkitLibraryManager.loadLibrary(asmUtil);
+		bukkitLibraryManager.loadLibrary(xSeries);
 	}
 
 }

@@ -47,29 +47,5 @@ public final class Util {
 		}
 	}
 
-	/**
-	 * Return the corresponding major Java version such as 8 for Java 1.8, or 11 for Java 11.
-	 *
-	 * @return
-	 */
-	public static int getJavaVersion() {
-		String version = System.getProperty("java.version");
-
-		if (version.startsWith("1."))
-			version = version.substring(2, 3);
-
-		else {
-			final int dot = version.indexOf(".");
-
-			if (dot != -1)
-				version = version.substring(0, dot);
-		}
-
-		if (version.contains("-"))
-			version = version.split("\\-")[0];
-
-		return Integer.parseInt(version);
-	}
-
 
 }
