@@ -10,12 +10,6 @@ bow:
   can-be-dropped: true
   can-be-swapped: true
 
-teleport:
-  sound:
-    type: "ENTITY_PLAYER_TELEPORT"
-    volume: 1.0
-    pitch: 1.0
-
 message:
   prefix: "&7[&b&lTeleport&3&lBow&7]"
   reload: "&2Plugin reload!"
