@@ -101,7 +101,7 @@ public final class Settings {
 		try {
 			final String teleportSoundTypeConfig = TeleportBow.getInstance().getConfig().getString("teleport.sound.type", "ENTITY_PLAYER_TELEPORT").toUpperCase();
 			if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_21) && MinecraftVersion.getSubversion() >= 3) {
-				TELEPORT_SOUND_TYPE = Registry.SOUNDS.get(NamespacedKey.fromString(teleportSoundTypeConfig.toLowerCase(Locale.ROOT)));
+				Registry.SOUNDS.get(NamespacedKey.fromString(teleportSoundTypeConfig.toLowerCase(Locale.ROOT)));
 			} else {
 				TELEPORT_SOUND_TYPE = Sound.valueOf(teleportSoundTypeConfig);
 			}
@@ -149,7 +149,7 @@ public final class Settings {
 			TeleportBow.getInstance().getConfig().set("teleport.sound.pitch", 1.0F);
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'teleport.sound.pitch' with default value '1.0'.");
 		}
-
+		
 		TeleportBow.getInstance().saveConfig();
 	}
 
