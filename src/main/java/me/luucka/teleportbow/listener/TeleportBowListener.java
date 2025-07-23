@@ -6,6 +6,7 @@ import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import static me.luucka.teleportbow.util.Color.colorize;
 
 public final class TeleportBowListener implements Listener {
 
@@ -41,16 +44,23 @@ public final class TeleportBowListener implements Listener {
 			return;
 		}
 
-		if (event.getProjectile().getType() != EntityType.ARROW) {
+		final ItemStack bow = event.getBow();
+		if (bow == null || !BowManager.isValidBow(bow)) {
 			return;
 		}
 
 		final Player player = (Player) event.getEntity();
-		final ItemStack bow = event.getBow();
-		final int entityId = event.getProjectile().getEntityId();
+		if (isWorldBlocked(player.getWorld())) {
+			event.setCancelled(true);
+			player.sendMessage(colorize(Settings.WORLD_NOT_ALLOWED));
+			return;
+		}
 
-		if (bow == null) return;
-		if (!BowManager.isValidBow(bow)) return;
+		if (event.getProjectile().getType() != EntityType.ARROW) {
+			return;
+		}
+
+		final int entityId = event.getProjectile().getEntityId();
 
 		BowManager.getTpArrows().put(player.getUniqueId(), entityId);
 
@@ -150,6 +160,11 @@ public final class TeleportBowListener implements Listener {
 
 			if (!Settings.CAN_BE_SWAPPED && (isMainHand || isOffHand)) event.setCancelled(true);
 		}
+	}
+
+	private static boolean isWorldBlocked(final World world) {
+		final String worldName = world.getName();
+		return !"none".equalsIgnoreCase(Settings.WORLDS_LIST_TYPE) && "whitelist".equalsIgnoreCase(Settings.WORLDS_LIST_TYPE) != Settings.WORLDS_LIST.contains(worldName);
 	}
 
 }

@@ -10,6 +10,12 @@ bow:
   can-be-dropped: true
   can-be-swapped: true
 
+worlds:
+  list-type: none # whitelist, blacklist, none
+  list:
+    - world
+    - world_nether
+
 message:
   prefix: "&7[&b&lTeleport&3&lBow&7]"
   reload: "&2Plugin reload!"
@@ -17,5 +23,6 @@ message:
   no-perm: "&cYou do not have the permission!"
   usage: "&aUsage:"
   player-not-found: "&cThe player &7{player} &cdoes not exists"
+  world-not-allowed: "&cThe Bow in this world is not allowed"
 
 check-for-updates: true

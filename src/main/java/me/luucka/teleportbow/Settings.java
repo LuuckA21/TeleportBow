@@ -3,13 +3,14 @@ package me.luucka.teleportbow;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class Settings {
 
 	private Settings() {
 	}
+
+	// BOW -------------------------------------------------------------------------------------------------------------
 
 	public static Material BOW_TYPE = Material.BOW;
 
@@ -29,6 +30,14 @@ public final class Settings {
 
 	public static boolean CAN_BE_SWAPPED = true;
 
+	// WORLDS ----------------------------------------------------------------------------------------------------------
+
+	public static String WORLDS_LIST_TYPE = "none";
+
+	public static List<String> WORLDS_LIST = Collections.emptyList();
+
+	// MESSAGE ---------------------------------------------------------------------------------------------------------
+
 	public static String PREFIX = "&7[&b&lTeleport&3&lBow&7] ";
 
 	public static String RELOAD = "&2Plugin reload!";
@@ -41,12 +50,18 @@ public final class Settings {
 
 	public static String PLAYER_NOT_FOUND = "&cThe player &7{player} &cdoes not exists";
 
+	public static String WORLD_NOT_ALLOWED = "&cThe Bow in this world is not allowed";
+
+
+	// OTHER -----------------------------------------------------------------------------------------------------------
+
 	public static boolean CHECK_FOR_UPDATES = true;
 
 	public static void load() {
 		TeleportBow.getInstance().saveDefaultConfig();
 
 		newFieldsFromV171ToV180();
+		newFieldsFromV184ToV190();
 
 		TeleportBow.getInstance().reloadConfig();
 
@@ -75,12 +90,18 @@ public final class Settings {
 		CAN_BE_DROPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = TeleportBow.getInstance().getConfig().getBoolean("bow.can-be-swapped");
 
+		final Set<String> validWorldsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
+		final String worldsListType = TeleportBow.getInstance().getConfig().getString("worlds.list-type", "none");
+		WORLDS_LIST_TYPE = validWorldsListType.contains(worldsListType.toLowerCase()) ? worldsListType : "none";
+		WORLDS_LIST = TeleportBow.getInstance().getConfig().getStringList("worlds.list");
+
 		PREFIX = _getPrefix();
 		RELOAD = PREFIX + TeleportBow.getInstance().getConfig().getString("message.reload");
 		NO_CONSOLE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-console");
 		NO_PERM = PREFIX + TeleportBow.getInstance().getConfig().getString("message.no-perm");
 		USAGE = PREFIX + TeleportBow.getInstance().getConfig().getString("message.usage");
 		PLAYER_NOT_FOUND = PREFIX + TeleportBow.getInstance().getConfig().getString("message.player-not-found");
+		WORLD_NOT_ALLOWED = PREFIX + TeleportBow.getInstance().getConfig().getString("message.world-not-allowed");
 
 		CHECK_FOR_UPDATES = TeleportBow.getInstance().getConfig().getBoolean("check-for-updates");
 	}
@@ -95,6 +116,26 @@ public final class Settings {
 			TeleportBow.getInstance().getConfig().set("bow.type", "BOW");
 			TeleportBow.getInstance().saveConfig();
 			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'bow.type' with default value 'BOW'.");
+		}
+	}
+
+	private static void newFieldsFromV184ToV190() {
+		if (!TeleportBow.getInstance().getConfig().isSet("worlds.list-type")) {
+			TeleportBow.getInstance().getConfig().set("worlds.list-type", "none");
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'worlds.list-type' with default value 'none'.");
+		}
+
+		if (!TeleportBow.getInstance().getConfig().isSet("worlds.list")) {
+			TeleportBow.getInstance().getConfig().set("worlds.list", Arrays.asList("world", "world_nether"));
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'worlds.list' with default value 'world, world_nether'.");
+		}
+
+		if (!TeleportBow.getInstance().getConfig().isSet("message.world-not-allowed")) {
+			TeleportBow.getInstance().getConfig().set("message.world-not-allowed", "&cThe Bow in this world is not allowed");
+			TeleportBow.getInstance().saveConfig();
+			TeleportBow.getInstance().getLogger().info("Configuration: Added missing 'message.world-not-allowed' with default value 'The Bow in this world is not allowed'.");
 		}
 	}
 
