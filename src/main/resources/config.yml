@@ -11,10 +11,22 @@ bow:
   can-be-swapped: true
 
 worlds:
-  list-type: none # whitelist, blacklist, none
+  # whitelist - Allow only worlds in this list
+  # blacklist - Deny only worlds in this list
+  # none - do nothing
+  list-type: none
   list:
     - world
     - world_nether
+
+teleport:
+  sound:
+    # Sound list:
+    # https://github.com/CryptoMorin/XSeries/blob/master/core/src/main/java/com/cryptomorin/xseries/XSound.java
+    type: ENTITY_ENDERMAN_TELEPORT
+    volume: 1.0
+    pitch: 1.0
+    enable: true
 
 message:
   prefix: "&7[&b&lTeleport&3&lBow&7]"

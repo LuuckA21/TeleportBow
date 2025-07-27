@@ -1,14 +1,15 @@
 package me.luucka.teleportbow.listener;
 
 import me.luucka.teleportbow.BowManager;
-import me.luucka.teleportbow.Settings;
 import me.luucka.teleportbow.TeleportBow;
+import me.luucka.teleportbow.setting.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -50,7 +51,7 @@ public final class TeleportBowListener implements Listener {
 		}
 
 		final Player player = (Player) event.getEntity();
-		if (isWorldBlocked(player.getWorld())) {
+		if (isWorldBlocked(player.getWorld()) && !player.hasPermission("tpbow.bypass")) {
 			event.setCancelled(true);
 			player.sendMessage(colorize(Settings.WORLD_NOT_ALLOWED));
 			return;
@@ -82,17 +83,28 @@ public final class TeleportBowListener implements Listener {
 		}
 
 		final Player player = (Player) event.getEntity().getShooter();
-		final int entityId = event.getEntity().getEntityId();
+		final Location playerLocation = player.getLocation();
+		final Projectile projectile = event.getEntity();
+		final int entityId = projectile.getEntityId();
+		final Location arrowLocation = projectile.getLocation();
 
 		if (!BowManager.getTpArrows().get(player.getUniqueId()).contains(entityId)) return;
 
-		final Location location = event.getEntity().getLocation();
-		location.setYaw(player.getLocation().getYaw());
-		location.setPitch(player.getLocation().getPitch());
+		arrowLocation.setYaw(playerLocation.getYaw());
+		arrowLocation.setPitch(playerLocation.getPitch());
 
 		event.getEntity().remove();
 
-		player.teleport(location);
+		player.teleport(arrowLocation);
+
+		if (Settings.SOUND_ENABLE) {
+			(new BukkitRunnable() {
+				@Override
+				public void run() {
+					Settings.SOUND_TYPE.play(player, Settings.SOUND_VOLUME, Settings.SOUND_PITCH);
+				}
+			}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 1L);
+		}
 
 		BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
 	}

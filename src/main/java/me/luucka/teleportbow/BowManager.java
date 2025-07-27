@@ -6,6 +6,7 @@ import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.ItemBuilder;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;

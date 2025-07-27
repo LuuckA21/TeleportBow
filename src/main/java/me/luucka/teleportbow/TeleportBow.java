@@ -1,16 +1,23 @@
 package me.luucka.teleportbow;
 
 import lombok.Getter;
+import me.luucka.teleportbow.command.DummyCommand;
 import me.luucka.teleportbow.command.TpBowCommand;
 import me.luucka.teleportbow.listener.TeleportBowListener;
+import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import me.luucka.teleportbow.util.UpdateChecker;
+import net.byteflux.libby.BukkitLibraryManager;
+import net.byteflux.libby.Library;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TeleportBow extends JavaPlugin {
 
 	@Getter
 	private static TeleportBow instance;
+
+
+	private BukkitLibraryManager libraryManager;
 
 	@Override
 	public void onEnable() {
@@ -23,6 +30,10 @@ public final class TeleportBow extends JavaPlugin {
 
 		instance = this;
 
+		this.libraryManager = new BukkitLibraryManager(this);
+		libraryManager.addMavenCentral();
+		loadLibraries();
+
 		Settings.load();
 
 		if (Settings.CHECK_FOR_UPDATES) {
@@ -30,6 +41,7 @@ public final class TeleportBow extends JavaPlugin {
 		}
 
 		getCommand("tpbow").setExecutor(new TpBowCommand());
+		getCommand("dummy").setExecutor(new DummyCommand());
 
 		getServer().getPluginManager().registerEvents(new TeleportBowListener(), this);
 	}
@@ -45,6 +57,16 @@ public final class TeleportBow extends JavaPlugin {
 				getLogger().info("Download at: https://www.spigotmc.org/resources/teleportbow.89723/");
 			}
 		});
+	}
+
+	private void loadLibraries() {
+		final Library lib = Library.builder()
+				.groupId("com{}github{}cryptomorin")
+				.artifactId("XSeries")
+				.version("13.3.3")
+
+				.build();
+		libraryManager.loadLibrary(lib);
 	}
 
 }

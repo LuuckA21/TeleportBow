@@ -1,8 +1,8 @@
 package me.luucka.teleportbow.command;
 
 import me.luucka.teleportbow.BowManager;
-import me.luucka.teleportbow.Settings;
 import me.luucka.teleportbow.TeleportBow;
+import me.luucka.teleportbow.setting.Settings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -59,7 +59,7 @@ public class TpBowCommand implements TabExecutor {
 					player.sendMessage(colorize(Settings.NO_PERM));
 					return true;
 				}
-				Settings.load();
+				Settings.reload();
 				player.sendMessage(colorize(Settings.RELOAD));
 			}
 		}

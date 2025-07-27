@@ -1,6 +1,7 @@
-package me.luucka.teleportbow;
+package me.luucka.teleportbow.setting;
 
 import com.cryptomorin.xseries.XSound;
+import me.luucka.teleportbow.TeleportBow;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
