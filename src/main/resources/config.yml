@@ -22,7 +22,7 @@ worlds:
 teleport:
   sound:
     # Sound list:
-    # https://github.com/CryptoMorin/XSeries/blob/master/core/src/main/java/com/cryptomorin/xseries/XSound.java
+    # https://pck.li/xseriessounds
     type: ENTITY_ENDERMAN_TELEPORT
     volume: 1.0
     pitch: 1.0
