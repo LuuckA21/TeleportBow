@@ -19,7 +19,7 @@ public class DummyCommand implements CommandExecutor {
 //				.offset(0.5, 0.5, 0.5)
 //				.withCount(30)
 				.withLocation(playerLocation);
-		Particles.diamond(2.0, 1.0, 15.0, display);
+		Particles.diamond(2.0, 1.0, 16.0, display);
 
 		return true;
 	}
