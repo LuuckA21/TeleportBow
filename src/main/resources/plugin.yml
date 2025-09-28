@@ -4,6 +4,7 @@ main: me.luucka.teleportbow.TeleportBow
 api-version: 1.13
 authors: [ LuuckA ]
 description: Shoot an arrow and teleport
+softdepend: [ WorldGuard ]
 commands:
   tpbow:
     description: Main command

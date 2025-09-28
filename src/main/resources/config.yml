@@ -20,6 +20,15 @@ worlds:
     - world
     - world_nether
 
+# This section need WorldGuard plugin
+regions:
+  # whitelist - Allow only regions in this list
+  # blacklist - Deny only regions in this list
+  # none - do nothing
+  list-type: none
+  list:
+    - test
+
 teleport:
   sound:
     # Sound list:
@@ -37,6 +46,7 @@ message:
   usage: "&aUsage:"
   player-not-found: "&cThe player &7{player} &cdoes not exists"
   world-not-allowed: "&cThe Bow in this world is not allowed"
+  region-not-allowed: "&cThe Bow in this region is not allowed"
 
 check-for-updates: true
 

@@ -60,6 +60,12 @@ public final class TeleportBowListener implements Listener {
 			return;
 		}
 
+		if (!TeleportBow.getInstance().getWorldGuardRegionService().canUseBowInRegion(player)) {
+			event.setCancelled(true);
+			player.sendMessage(colorize("&cYou can't use Bow in this region!"));
+			return;
+		}
+
 		if (event.getProjectile().getType() != EntityType.ARROW) {
 			return;
 		}
