@@ -9,6 +9,7 @@ bow:
   can-be-moved-in-inventory: true
   can-be-dropped: true
   can-be-swapped: true
+  arrow-damage: false
 
 worlds:
   # whitelist - Allow only worlds in this list

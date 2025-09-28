@@ -34,6 +34,8 @@ public final class Settings {
 
 	public static boolean CAN_BE_SWAPPED = true;
 
+	public static boolean ARROW_DAMAGE = false;
+
 	// WORLDS ----------------------------------------------------------------------------------------------------------
 
 	public static String WORLDS_LIST_TYPE = "none";
@@ -77,6 +79,7 @@ public final class Settings {
 		TeleportBow.getInstance().saveDefaultConfig();
 		newFieldsFromV171ToV180();
 		newFieldsFromV184ToV190();
+		newFieldsFromV190ToV191();
 		reload();
 	}
 
@@ -109,6 +112,7 @@ public final class Settings {
 		CAN_BE_MOVED_IN_INVENTORY = config.getBoolean("bow.can-be-moved-in-inventory");
 		CAN_BE_DROPPED = config.getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = config.getBoolean("bow.can-be-swapped");
+		ARROW_DAMAGE = config.getBoolean("bow.arrow-damage");
 
 		final Set<String> validWorldsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 		final String worldsListType = config.getString("worlds.list-type", "none");
@@ -163,6 +167,15 @@ public final class Settings {
 		setIfMissing(config, "message.world-not-allowed", "&cThe Bow in this world is not allowed");
 
 		setIfMissing(config, "bstats", true);
+
+		plugin.saveConfig();
+	}
+
+	private static void newFieldsFromV190ToV191() {
+		final JavaPlugin plugin = TeleportBow.getInstance();
+		final FileConfiguration config = TeleportBow.getInstance().getConfig();
+
+		setIfMissing(config, "bow.arrow-damage", false);
 
 		plugin.saveConfig();
 	}

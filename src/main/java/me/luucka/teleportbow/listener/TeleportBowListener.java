@@ -7,11 +7,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -51,6 +53,7 @@ public final class TeleportBowListener implements Listener {
 		}
 
 		final Player player = (Player) event.getEntity();
+
 		if (isWorldBlocked(player.getWorld()) && !player.hasPermission("tpbow.bypass")) {
 			event.setCancelled(true);
 			player.sendMessage(colorize(Settings.WORLD_NOT_ALLOWED));
@@ -106,15 +109,26 @@ public final class TeleportBowListener implements Listener {
 			}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 1L);
 		}
 
-		BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
+		Bukkit.getScheduler().runTaskLaterAsynchronously(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(player.getUniqueId(), entityId), 20L);
 	}
 
 	@EventHandler
 	public void onPlayerFallAfterTeleport(final EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player) {
+		if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
 			final Player player = (Player) event.getEntity();
 			if (BowManager.getTpArrows().containsKey(player.getUniqueId())) {
 				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerHitByArrow(final EntityDamageByEntityEvent event) {
+		if (!Settings.ARROW_DAMAGE) {
+			if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
+				if (BowManager.getTpArrows().containsValue(event.getDamager().getEntityId())) {
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
