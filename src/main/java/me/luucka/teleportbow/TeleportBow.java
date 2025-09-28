@@ -1,7 +1,6 @@
 package me.luucka.teleportbow;
 
 import lombok.Getter;
-import me.luucka.teleportbow.command.DummyCommand;
 import me.luucka.teleportbow.command.TpBowCommand;
 import me.luucka.teleportbow.listener.TeleportBowListener;
 import me.luucka.teleportbow.setting.Settings;
@@ -36,12 +35,16 @@ public final class TeleportBow extends JavaPlugin {
 
 		Settings.load();
 
+		if (Settings.BSTATS) {
+			getLogger().info("bStats instance loaded.");
+			Metrics metrics = new Metrics(this, 27393);
+		}
+
 		if (Settings.CHECK_FOR_UPDATES) {
 			checkForUpdates();
 		}
 
 		getCommand("tpbow").setExecutor(new TpBowCommand());
-		getCommand("dummy").setExecutor(new DummyCommand());
 
 		getServer().getPluginManager().registerEvents(new TeleportBowListener(), this);
 	}
@@ -63,7 +66,7 @@ public final class TeleportBow extends JavaPlugin {
 		final Library lib = Library.builder()
 				.groupId("com{}github{}cryptomorin")
 				.artifactId("XSeries")
-				.version("13.3.3")
+				.version("13.4.0")
 
 				.build();
 		libraryManager.loadLibrary(lib);

@@ -25,18 +25,7 @@ public class TpBowCommand implements TabExecutor {
 		final Player player = (Player) sender;
 
 		if (args.length == 0) {
-			boolean hasGivePermission = player.hasPermission("tpbow.give");
-			boolean hasReloadPermission = player.hasPermission("tpbow.reload");
-
-			if (hasGivePermission || hasReloadPermission) {
-				player.sendMessage(colorize(Settings.USAGE));
-				if (hasGivePermission) {
-					player.sendMessage(colorize("&7Usage: /tpbow give [player] - Give special bow to a player, or yourself"));
-				}
-				if (hasReloadPermission) {
-					player.sendMessage(colorize("&7Usage: /tpbow reload - Reload the plugin"));
-				}
-			}
+			showUsage(player);
 		} else {
 			if ("give".equals(args[0])) {
 				if (!player.hasPermission("tpbow.give")) {
@@ -61,6 +50,8 @@ public class TpBowCommand implements TabExecutor {
 				}
 				Settings.reload();
 				player.sendMessage(colorize(Settings.RELOAD));
+			} else {
+				showUsage(player);
 			}
 		}
 		return true;
@@ -82,5 +73,20 @@ public class TpBowCommand implements TabExecutor {
 			}
 		}
 		return suggestions;
+	}
+
+	private void showUsage(final Player player) {
+		boolean hasGivePermission = player.hasPermission("tpbow.give");
+		boolean hasReloadPermission = player.hasPermission("tpbow.reload");
+
+		if (hasGivePermission || hasReloadPermission) {
+			player.sendMessage(colorize(Settings.USAGE));
+			if (hasGivePermission) {
+				player.sendMessage(colorize("&7Usage: /tpbow give [player] - Give special bow to a player, or yourself"));
+			}
+			if (hasReloadPermission) {
+				player.sendMessage(colorize("&7Usage: /tpbow reload - Reload the plugin"));
+			}
+		}
 	}
 }

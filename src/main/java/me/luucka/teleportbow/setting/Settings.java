@@ -71,6 +71,8 @@ public final class Settings {
 
 	public static boolean CHECK_FOR_UPDATES = true;
 
+	public static boolean BSTATS = true;
+
 	public static void load() {
 		TeleportBow.getInstance().saveDefaultConfig();
 		newFieldsFromV171ToV180();
@@ -80,8 +82,8 @@ public final class Settings {
 
 	public static void reload() {
 		final JavaPlugin plugin = TeleportBow.getInstance();
-		final FileConfiguration config = TeleportBow.getInstance().getConfig();
 		plugin.reloadConfig();
+		final FileConfiguration config = TeleportBow.getInstance().getConfig();
 
 		try {
 			final String bowTypeConfig = config.getString("bow.type", "BOW").toUpperCase();
@@ -128,6 +130,8 @@ public final class Settings {
 		WORLD_NOT_ALLOWED = PREFIX + config.getString("message.world-not-allowed");
 
 		CHECK_FOR_UPDATES = config.getBoolean("check-for-updates");
+
+		BSTATS = config.getBoolean("bstats");
 	}
 
 	private static String _getPrefix() {
@@ -157,6 +161,8 @@ public final class Settings {
 		setIfMissing(config, "teleport.sound.enable", true);
 
 		setIfMissing(config, "message.world-not-allowed", "&cThe Bow in this world is not allowed");
+
+		setIfMissing(config, "bstats", true);
 
 		plugin.saveConfig();
 	}

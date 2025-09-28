@@ -7,8 +7,6 @@ description: Shoot an arrow and teleport
 commands:
   tpbow:
     description: Main command
-  dummy:
-    description: dummy
 permissions:
   tpbow.*:
     default: op
@@ -19,7 +17,7 @@ permissions:
       tpbow.bypass: true
   tpbow.give:
     default: false
-    description: Allow you to use /tpbow command
+    description: Allow you to use /tpbow give command
   tpbow.relaod:
     default: false
     description: Allow you to use /tpbow reload command

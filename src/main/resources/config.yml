@@ -23,7 +23,7 @@ teleport:
   sound:
     # Sound list:
     # https://pck.li/xseriessounds
-    type: ENTITY_ENDERMAN_TELEPORT
+    type: "ENTITY_ENDERMAN_TELEPORT"
     volume: 1.0
     pitch: 1.0
     enable: true
@@ -38,3 +38,5 @@ message:
   world-not-allowed: "&cThe Bow in this world is not allowed"
 
 check-for-updates: true
+
+bstats: true
