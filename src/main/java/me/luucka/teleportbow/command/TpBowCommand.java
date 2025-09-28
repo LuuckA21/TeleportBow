@@ -82,10 +82,10 @@ public class TpBowCommand implements TabExecutor {
 		if (hasGivePermission || hasReloadPermission) {
 			player.sendMessage(colorize(Settings.USAGE));
 			if (hasGivePermission) {
-				player.sendMessage(colorize("&7Usage: /tpbow give [player] - Give special bow to a player, or yourself"));
+				player.sendMessage(colorize("&7/tpbow give [player] - Give special bow to a player, or yourself"));
 			}
 			if (hasReloadPermission) {
-				player.sendMessage(colorize("&7Usage: /tpbow reload - Reload the plugin"));
+				player.sendMessage(colorize("&7/tpbow reload - Reload the plugin"));
 			}
 		}
 	}
