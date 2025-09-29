@@ -16,6 +16,7 @@ permissions:
       tpbow.give: true
       tpbow.relaod: true
       tpbow.bypass: true
+      tpbow.use: true
   tpbow.give:
     default: false
     description: Allow you to use /tpbow give command
@@ -25,3 +26,6 @@ permissions:
   tpbow.bypass:
     default: false
     description: Allow you to bypass worlds limitation
+  tpbow.use:
+    default: false
+    description: Allow you to use the Bow

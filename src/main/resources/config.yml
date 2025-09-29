@@ -5,11 +5,12 @@ bow:
     - "&7Shoot an arrow to teleport"
   slot: 0
   arrow-slot: 9
+  arrow-damage: false
+  needed-permission: false
   give-on-join: true
   can-be-moved-in-inventory: true
   can-be-dropped: true
   can-be-swapped: true
-  arrow-damage: false
 
 worlds:
   # whitelist - Allow only worlds in this list

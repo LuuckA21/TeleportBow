@@ -26,6 +26,10 @@ public final class Settings {
 
 	public static int ARROW_SLOT = 9;
 
+	public static boolean ARROW_DAMAGE = false;
+
+	public static boolean NEEDED_PERMISSION = false;
+
 	public static boolean GIVE_ON_JOIN = true;
 
 	public static boolean CAN_BE_MOVED_IN_INVENTORY = true;
@@ -33,8 +37,6 @@ public final class Settings {
 	public static boolean CAN_BE_DROPPED = true;
 
 	public static boolean CAN_BE_SWAPPED = true;
-
-	public static boolean ARROW_DAMAGE = false;
 
 	// WORLDS ----------------------------------------------------------------------------------------------------------
 
@@ -116,11 +118,12 @@ public final class Settings {
 		BOW_LORE = config.getStringList("bow.lore");
 		BOW_SLOT = config.getInt("bow.slot");
 		ARROW_SLOT = config.getInt("bow.arrow-slot");
+		ARROW_DAMAGE = config.getBoolean("bow.arrow-damage");
+		NEEDED_PERMISSION = config.getBoolean("bow.needed-permission");
 		GIVE_ON_JOIN = config.getBoolean("bow.give-on-join");
 		CAN_BE_MOVED_IN_INVENTORY = config.getBoolean("bow.can-be-moved-in-inventory");
 		CAN_BE_DROPPED = config.getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = config.getBoolean("bow.can-be-swapped");
-		ARROW_DAMAGE = config.getBoolean("bow.arrow-damage");
 
 		final Set<String> validWorldsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 		final String worldsListType = config.getString("worlds.list-type", "none");
@@ -190,6 +193,7 @@ public final class Settings {
 		final FileConfiguration config = TeleportBow.getInstance().getConfig();
 
 		setIfMissing(config, "bow.arrow-damage", false);
+		setIfMissing(config, "bow.needed-permission", false);
 
 		setIfMissing(config, "regions.list-type", "none");
 		setIfMissing(config, "regions.list", Collections.singletonList("region"));

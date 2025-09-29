@@ -57,6 +57,14 @@ public final class TeleportBowListener implements Listener {
 
 		final Player player = (Player) event.getEntity();
 
+		if (Settings.NEEDED_PERMISSION) {
+			if (!player.hasPermission("tpbow.use") && !player.hasPermission("tpbow.bypass")) {
+				event.setCancelled(true);
+				player.sendMessage(colorize(Settings.NO_PERM));
+				return;
+			}
+		}
+
 		if (isWorldBlocked(player.getWorld()) && !player.hasPermission("tpbow.bypass")) {
 			event.setCancelled(true);
 			player.sendMessage(colorize(Settings.WORLD_NOT_ALLOWED));
