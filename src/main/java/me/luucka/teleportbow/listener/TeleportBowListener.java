@@ -2,6 +2,7 @@ package me.luucka.teleportbow.listener;
 
 import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.TeleportBow;
+import me.luucka.teleportbow.hook.HookManager;
 import me.luucka.teleportbow.setting.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,6 +25,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
 
 import static me.luucka.teleportbow.util.Color.colorize;
 
@@ -60,9 +63,9 @@ public final class TeleportBowListener implements Listener {
 			return;
 		}
 
-		if (!TeleportBow.getInstance().getWorldGuardRegionService().canUseBowInRegion(player)) {
+		if (isRegionBlocked(player)) {
 			event.setCancelled(true);
-			player.sendMessage(colorize("&cYou can't use Bow in this region!"));
+			player.sendMessage(colorize(Settings.REGION_NOT_ALLOWED));
 			return;
 		}
 
@@ -197,6 +200,21 @@ public final class TeleportBowListener implements Listener {
 	private static boolean isWorldBlocked(final World world) {
 		final String worldName = world.getName();
 		return !"none".equalsIgnoreCase(Settings.WORLDS_LIST_TYPE) && "whitelist".equalsIgnoreCase(Settings.WORLDS_LIST_TYPE) != Settings.WORLDS_LIST.contains(worldName);
+	}
+
+	private static boolean isRegionBlocked(final Player player) {
+		String type = Settings.REGIONS_LIST_TYPE.toLowerCase();
+		List<String> regions = HookManager.getRegions(player.getLocation());
+		if (regions.isEmpty()) return false;
+
+		switch (type) {
+			case "whitelist":
+				return regions.stream().noneMatch(Settings.REGIONS_LIST::contains);
+			case "blacklist":
+				return regions.stream().anyMatch(Settings.REGIONS_LIST::contains);
+			default:
+				return false;
+		}
 	}
 
 }

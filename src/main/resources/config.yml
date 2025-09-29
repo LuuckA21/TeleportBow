@@ -27,7 +27,7 @@ regions:
   # none - do nothing
   list-type: none
   list:
-    - test
+    - region
 
 teleport:
   sound:

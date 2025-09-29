@@ -42,6 +42,12 @@ public final class Settings {
 
 	public static List<String> WORLDS_LIST = Collections.emptyList();
 
+	// REGIONS ---------------------------------------------------------------------------------------------------------
+
+	public static String REGIONS_LIST_TYPE = "none";
+
+	public static List<String> REGIONS_LIST = Collections.emptyList();
+
 	// TELEPORT - SOUND ------------------------------------------------------------------------------------------------
 
 	public static XSound SOUND_TYPE = XSound.ENTITY_ENDERMAN_TELEPORT;
@@ -67,6 +73,8 @@ public final class Settings {
 	public static String PLAYER_NOT_FOUND = "&cThe player &7{player} &cdoes not exists";
 
 	public static String WORLD_NOT_ALLOWED = "&cThe Bow in this world is not allowed";
+
+	public static String REGION_NOT_ALLOWED = "&cThe Bow in this region is not allowed";
 
 
 	// OTHER -----------------------------------------------------------------------------------------------------------
@@ -119,6 +127,11 @@ public final class Settings {
 		WORLDS_LIST_TYPE = validWorldsListType.contains(worldsListType.toLowerCase()) ? worldsListType : "none";
 		WORLDS_LIST = config.getStringList("worlds.list");
 
+		final Set<String> validRegionsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
+		final String regionsListType = config.getString("regions.list-type", "none");
+		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
+		REGIONS_LIST = config.getStringList("regions.list");
+
 		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
 		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
 		SOUND_VOLUME = (float) config.getDouble("teleport.sound.volume");
@@ -132,6 +145,7 @@ public final class Settings {
 		USAGE = PREFIX + config.getString("message.usage");
 		PLAYER_NOT_FOUND = PREFIX + config.getString("message.player-not-found");
 		WORLD_NOT_ALLOWED = PREFIX + config.getString("message.world-not-allowed");
+		REGION_NOT_ALLOWED = PREFIX + config.getString("message.region-not-allowed");
 
 		CHECK_FOR_UPDATES = config.getBoolean("check-for-updates");
 
@@ -176,6 +190,11 @@ public final class Settings {
 		final FileConfiguration config = TeleportBow.getInstance().getConfig();
 
 		setIfMissing(config, "bow.arrow-damage", false);
+
+		setIfMissing(config, "regions.list-type", "none");
+		setIfMissing(config, "regions.list", Collections.singletonList("region"));
+
+		setIfMissing(config, "message.region-not-allowed", "&cThe Bow in this region is not allowed");
 
 		plugin.saveConfig();
 	}

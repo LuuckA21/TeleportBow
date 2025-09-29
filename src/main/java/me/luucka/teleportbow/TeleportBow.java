@@ -2,17 +2,13 @@ package me.luucka.teleportbow;
 
 import lombok.Getter;
 import me.luucka.teleportbow.command.TpBowCommand;
-import me.luucka.teleportbow.impl.IWorldGuardRegionService;
-import me.luucka.teleportbow.impl.WG6RegionService;
-import me.luucka.teleportbow.impl.WG7RegionService;
+import me.luucka.teleportbow.hook.HookManager;
 import me.luucka.teleportbow.listener.TeleportBowListener;
 import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import me.luucka.teleportbow.util.UpdateChecker;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TeleportBow extends JavaPlugin {
@@ -22,9 +18,6 @@ public final class TeleportBow extends JavaPlugin {
 
 
 	private BukkitLibraryManager libraryManager;
-
-	@Getter
-	private IWorldGuardRegionService worldGuardRegionService;
 
 	@Override
 	public void onEnable() {
@@ -43,7 +36,8 @@ public final class TeleportBow extends JavaPlugin {
 
 		Settings.load();
 
-		this.worldGuardRegionService = hookWorldGuard();
+//		this.worldGuardRegionService = hookWorldGuard();
+		HookManager.loadDependencies();
 
 		if (Settings.BSTATS) {
 			getLogger().info("bStats instance loaded.");
@@ -80,49 +74,6 @@ public final class TeleportBow extends JavaPlugin {
 
 				.build();
 		libraryManager.loadLibrary(lib);
-	}
-
-	private IWorldGuardRegionService hookWorldGuard() {
-		try {
-			Class.forName("com.sk89q.worldguard.WorldGuard");
-			getLogger().info("Hooked into WorldGuard 7 for regions control");
-			return new WG7RegionService();
-		} catch (ClassNotFoundException ignore) {
-			try {
-				Class.forName("com.sk89q.worldguard.bukkit.WGBukkit");
-				getLogger().info("Hooked into WorldGuard 6 for regions control");
-				return new WG6RegionService(this);
-			} catch (ClassNotFoundException e) {
-				getLogger().info("WorldGuard not found, regions control will not work");
-				return player -> true;
-			}
-		}
-	}
-
-	private boolean isPluginInstalled(final String name) {
-		Plugin lookup = null;
-
-		for (final Plugin otherPlugin : Bukkit.getPluginManager().getPlugins())
-			if (otherPlugin.getDescription().getName().equals(name)) {
-				lookup = otherPlugin;
-
-				break;
-			}
-
-		final Plugin found = lookup;
-
-		if (found == null)
-			return false;
-
-		// Warn if the plugin is still disabled after server has finished loading.
-		if (!found.isEnabled())
-			Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-				if (!found.isEnabled())
-					getLogger().warning(Bukkit.getName() + " could not hook into " + name + " as the plugin is disabled! (DO NOT REPORT THIS TO "
-							+ Bukkit.getName() + ", look for errors above and contact support of '" + name + "')");
-			});
-
-		return true;
 	}
 
 }
