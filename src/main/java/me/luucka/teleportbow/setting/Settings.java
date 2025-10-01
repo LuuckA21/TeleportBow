@@ -2,6 +2,7 @@ package me.luucka.teleportbow.setting;
 
 import com.cryptomorin.xseries.XSound;
 import me.luucka.teleportbow.TeleportBow;
+import me.luucka.teleportbow.util.Debug;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -42,13 +43,13 @@ public final class Settings {
 
 	public static String WORLDS_LIST_TYPE = "none";
 
-	public static List<String> WORLDS_LIST = Collections.emptyList();
+	public static List<String> WORLDS_LIST = new ArrayList<>();
 
 	// REGIONS ---------------------------------------------------------------------------------------------------------
 
 	public static String REGIONS_LIST_TYPE = "none";
 
-	public static List<String> REGIONS_LIST = Collections.emptyList();
+	public static List<String> REGIONS_LIST = new ArrayList<>();
 
 	// TELEPORT - SOUND ------------------------------------------------------------------------------------------------
 
@@ -128,12 +129,13 @@ public final class Settings {
 		final Set<String> validWorldsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 		final String worldsListType = config.getString("worlds.list-type", "none");
 		WORLDS_LIST_TYPE = validWorldsListType.contains(worldsListType.toLowerCase()) ? worldsListType : "none";
-		WORLDS_LIST = config.getStringList("worlds.list");
+		WORLDS_LIST.addAll(config.getStringList("worlds.list"));
 
 		final Set<String> validRegionsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 		final String regionsListType = config.getString("regions.list-type", "none");
 		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
-		REGIONS_LIST = config.getStringList("regions.list");
+		Debug.debug("Regions.list value: " + config.getString("regions.list"));
+		REGIONS_LIST.addAll(config.getStringList("regions.list"));
 
 		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
 		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);

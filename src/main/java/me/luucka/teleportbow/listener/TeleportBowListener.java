@@ -4,6 +4,7 @@ import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.TeleportBow;
 import me.luucka.teleportbow.hook.HookManager;
 import me.luucka.teleportbow.setting.Settings;
+import me.luucka.teleportbow.util.Debug;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -211,8 +212,11 @@ public final class TeleportBowListener implements Listener {
 	}
 
 	private static boolean isRegionBlocked(final Player player) {
+		Debug.debug(player, "Checking region...");
 		String type = Settings.REGIONS_LIST_TYPE.toLowerCase();
+		Debug.debug(player, "WorldGuard region list-type " + type);
 		List<String> regions = HookManager.getRegions(player.getLocation());
+		Debug.debug(player, "WorldGuard regions " + Settings.REGIONS_LIST);
 		if (regions.isEmpty()) return false;
 
 		switch (type) {
