@@ -1,5 +1,7 @@
 package me.luucka.teleportbow;
 
+import com.alessiodp.libby.BukkitLibraryManager;
+import com.alessiodp.libby.Library;
 import lombok.Getter;
 import me.luucka.teleportbow.command.TpBowCommand;
 import me.luucka.teleportbow.hook.HookManager;
@@ -7,8 +9,6 @@ import me.luucka.teleportbow.listener.TeleportBowListener;
 import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import me.luucka.teleportbow.util.UpdateChecker;
-import net.byteflux.libby.BukkitLibraryManager;
-import net.byteflux.libby.Library;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TeleportBow extends JavaPlugin {
