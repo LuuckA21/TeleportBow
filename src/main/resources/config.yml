@@ -48,6 +48,7 @@ message:
   player-not-found: "&cThe player &7{player} &cdoes not exists"
   world-not-allowed: "&cThe Bow in this world is not allowed"
   region-not-allowed: "&cThe Bow in this region is not allowed"
+  bow-not-allowed: "&cYou can't use this bow"
 
 check-for-updates: true
 

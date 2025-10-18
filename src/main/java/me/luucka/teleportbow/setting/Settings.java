@@ -2,7 +2,6 @@ package me.luucka.teleportbow.setting;
 
 import com.cryptomorin.xseries.XSound;
 import me.luucka.teleportbow.TeleportBow;
-import me.luucka.teleportbow.util.Debug;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -79,6 +78,8 @@ public final class Settings {
 
 	public static String REGION_NOT_ALLOWED = "&cThe Bow in this region is not allowed";
 
+	public static String BOW_NOT_ALLOWED = "&cYou can't use this bow";
+
 
 	// OTHER -----------------------------------------------------------------------------------------------------------
 
@@ -134,7 +135,6 @@ public final class Settings {
 		final Set<String> validRegionsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 		final String regionsListType = config.getString("regions.list-type", "none");
 		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
-		Debug.debug("Regions.list value: " + config.getString("regions.list"));
 		REGIONS_LIST.addAll(config.getStringList("regions.list"));
 
 		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
@@ -151,6 +151,7 @@ public final class Settings {
 		PLAYER_NOT_FOUND = PREFIX + config.getString("message.player-not-found");
 		WORLD_NOT_ALLOWED = PREFIX + config.getString("message.world-not-allowed");
 		REGION_NOT_ALLOWED = PREFIX + config.getString("message.region-not-allowed");
+		BOW_NOT_ALLOWED = PREFIX + config.getString("message.bow-not-allowed");
 
 		CHECK_FOR_UPDATES = config.getBoolean("check-for-updates");
 
@@ -201,6 +202,7 @@ public final class Settings {
 		setIfMissing(config, "regions.list", Collections.singletonList("region"));
 
 		setIfMissing(config, "message.region-not-allowed", "&cThe Bow in this region is not allowed");
+		setIfMissing(config, "message.bow-not-allowed", "&cYou can't use this bow");
 
 		plugin.saveConfig();
 	}
