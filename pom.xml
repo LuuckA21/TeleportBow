@@ -6,7 +6,7 @@
 
     <groupId>me.luucka</groupId>
     <artifactId>teleportbow</artifactId>
-    <version>1.9.1-BETA</version>
+    <version>1.9.1</version>
     <packaging>jar</packaging>
 
     <name>TeleportBow</name>
