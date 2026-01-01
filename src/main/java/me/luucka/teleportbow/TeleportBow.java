@@ -70,7 +70,7 @@ public final class TeleportBow extends JavaPlugin {
 		final Library lib = Library.builder()
 				.groupId("com{}github{}cryptomorin")
 				.artifactId("XSeries")
-				.version("13.5.1")
+				.version("13.6.0")
 
 				.build();
 		libraryManager.loadLibrary(lib);
