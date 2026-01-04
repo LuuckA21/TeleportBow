@@ -1,81 +1,71 @@
 package me.luucka.teleportbow.command;
 
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import me.luucka.teleportbow.BowManager;
-import me.luucka.teleportbow.TeleportBow;
 import me.luucka.teleportbow.setting.Settings;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.luucka.teleportbow.util.Color.colorize;
 
-public class TpBowCommand implements TabExecutor {
+public class TpBowCommand {
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(colorize(Settings.NO_CONSOLE));
-			return true;
-		}
-		final Player player = (Player) sender;
-
-		if (args.length == 0) {
-			showUsage(player);
-		} else {
-			if ("give".equals(args[0])) {
-				if (!player.hasPermission("tpbow.give")) {
-					player.sendMessage(colorize(Settings.NO_PERM));
-					return true;
-				}
-
-				if (args.length == 1) {
-					BowManager.giveBow(player);
-				} else {
-					Player targetPlayer = TeleportBow.getInstance().getServer().getPlayer(args[1]);
-					if (targetPlayer == null) {
-						player.sendMessage(colorize(Settings.PLAYER_NOT_FOUND.replace("{player}", args[1])));
-						return true;
+	public static LiteralCommandNode<CommandSourceStack> build() {
+		return Commands.literal("tpbow")
+				.executes(ctx -> {
+					if (!(ctx.getSource().getSender() instanceof Player player)) {
+						ctx.getSource().getSender().sendMessage(colorize(Settings.NO_CONSOLE));
+						return 1;
 					}
-					BowManager.giveBow(targetPlayer);
-				}
-			} else if ("reload".equals(args[0])) {
-				if (!player.hasPermission("tpbow.reload")) {
-					player.sendMessage(colorize(Settings.NO_PERM));
-					return true;
-				}
-				Settings.reload();
-				player.sendMessage(colorize(Settings.RELOAD));
-			} else {
-				showUsage(player);
-			}
-		}
-		return true;
+					showUsage(player);
+					return 1;
+				})
+				.then(Commands.literal("give")
+						.requires(source -> source.getSender().hasPermission("tpbow.give"))
+						.executes(ctx -> {
+							if (!(ctx.getSource().getSender() instanceof Player player)) {
+								ctx.getSource().getSender().sendMessage(colorize(Settings.NO_CONSOLE));
+								return 1;
+							}
+							BowManager.giveBow(player);
+							return 1;
+						})
+						.then(Commands.argument("player", ArgumentTypes.player())
+								.executes(ctx -> {
+									PlayerSelectorArgumentResolver resolver = ctx.getArgument("player", PlayerSelectorArgumentResolver.class);
+									List<Player> players = resolver.resolve(ctx.getSource());
+									if (players.isEmpty()) {
+										ctx.getSource().getSender().sendMessage(colorize(Settings.PLAYER_NOT_FOUND.replace("{player}", "unknown")));
+										return 1;
+									}
+									Player target = players.get(0);
+									BowManager.giveBow(target);
+									return 1;
+								})
+						)
+				)
+				.then(Commands.literal("reload")
+						.requires(source -> source.getSender().hasPermission("tpbow.reload"))
+						.executes(ctx -> {
+							if (!(ctx.getSource().getSender() instanceof Player player)) {
+								ctx.getSource().getSender().sendMessage(colorize(Settings.NO_CONSOLE));
+								return 1;
+							}
+							Settings.reload();
+							player.sendMessage(colorize(Settings.RELOAD));
+							return 1;
+						})
+				)
+				.build();
+
 	}
 
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> suggestions = new ArrayList<>();
-		if (args.length == 1) {
-			if (sender.hasPermission("tpbow.reload")) {
-				suggestions.add("reload");
-			}
-			if (sender.hasPermission("tpbow.give")) {
-				suggestions.add("give");
-			}
-		} else if (args.length == 2) {
-			if (sender.hasPermission("tpbow.give")) {
-				suggestions.addAll(TeleportBow.getInstance().getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
-			}
-		}
-		return suggestions;
-	}
-
-	private void showUsage(final Player player) {
+	private static void showUsage(final Player player) {
 		boolean hasGivePermission = player.hasPermission("tpbow.give");
 		boolean hasReloadPermission = player.hasPermission("tpbow.reload");
 

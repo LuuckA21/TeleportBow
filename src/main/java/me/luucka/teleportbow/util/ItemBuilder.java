@@ -1,13 +1,14 @@
 package me.luucka.teleportbow.util;
 
-import de.tr7zw.changeme.nbtapi.NBT;
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -152,31 +153,19 @@ public final class ItemBuilder {
 	}
 
 	private static ItemStack setMetadata(final ItemStack item, final String key, final String value) {
-		final boolean remove = value == null || value.isEmpty();
+		if (value == null || value.isEmpty()) return item;
 		final ItemStack clone = new ItemStack(item);
+		final NamespacedKey namespacedKey = new NamespacedKey(TeleportBow.getInstance(), TeleportBow.getTAG_PREFIX() + key);
 
-		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_8)) {
-			return NBT.modify(clone, tag -> {
-				if (remove) {
-					if (tag.hasTag(key))
-						tag.removeKey(key);
-				} else
-					tag.setString(key, value);
-
-				return clone;
-			});
+		if (MinecraftVersion.equals(MinecraftVersion.V.v1_21) && MinecraftVersion.getSubversion() < 4) {
+			final ItemMeta meta = clone.getItemMeta();
+			meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
+			clone.setItemMeta(meta);
 		} else {
-			NBTItem nbtItem = new NBTItem(clone);
-			if (remove) {
-				if (nbtItem.hasTag(key)) {
-					nbtItem.removeKey(key);
-				}
-			} else {
-				nbtItem.setString(key, value);
-			}
-
-			return nbtItem.getItem();
+			clone.editPersistentDataContainer(pdc -> pdc.set(namespacedKey, PersistentDataType.STRING, value));
 		}
+
+		return clone;
 	}
 
 }

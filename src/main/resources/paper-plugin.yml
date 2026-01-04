@@ -1,0 +1,7 @@
+name: TeleportBow
+version: ${project.version}
+main: me.luucka.teleportbow.TeleportBow
+api-version: "1.21.1"
+authors: [ LuuckA ]
+description: Shoot an arrow and teleport
+softdepend: [ WorldGuard ]

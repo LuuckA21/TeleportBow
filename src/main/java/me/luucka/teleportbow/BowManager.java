@@ -2,16 +2,16 @@ package me.luucka.teleportbow;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.ItemBuilder;
-import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -40,18 +40,9 @@ public final class BowManager {
 	}
 
 	public static boolean isValidBow(final ItemStack bow) {
-		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
-			// For versions older than 1.14, only allow BOW
-			if (bow.getType() != Material.BOW) return false;
-		} else {
-			// For versions 1.14 and newer, allow BOW or CROSSBOW
-			if (bow.getType() != Material.BOW && bow.getType() != Material.CROSSBOW) return false;
-		}
+		if (bow.getType() != Material.BOW && bow.getType() != Material.CROSSBOW) return false;
 
-		String key = NBT.get(bow, nbt -> {
-			return nbt.getString("tpbow");
-		});
-
+		final String key = bow.getPersistentDataContainer().get(new NamespacedKey(TeleportBow.getInstance(), TeleportBow.getTAG_PREFIX() + "tpbow"), PersistentDataType.STRING);
 		if (key == null || key.isEmpty()) return false;
 		return key.equals("TpBow");
 	}

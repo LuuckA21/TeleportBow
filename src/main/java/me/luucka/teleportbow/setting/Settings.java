@@ -1,9 +1,12 @@
 package me.luucka.teleportbow.setting;
 
-import com.cryptomorin.xseries.XSound;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
 import me.luucka.teleportbow.TeleportBow;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,7 +55,8 @@ public final class Settings {
 
 	// TELEPORT - SOUND ------------------------------------------------------------------------------------------------
 
-	public static XSound SOUND_TYPE = XSound.ENTITY_ENDERMAN_TELEPORT;
+	//	public static XSound SOUND_TYPE = XSound.ENTITY_ENDERMAN_TELEPORT;
+	public static Sound SOUND_TYPE = Sound.ENTITY_ENDERMAN_TELEPORT;
 
 	public static float SOUND_VOLUME = 1.0f;
 
@@ -137,8 +141,13 @@ public final class Settings {
 		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
 		REGIONS_LIST.addAll(config.getStringList("regions.list"));
 
-		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
-		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
+//		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
+//		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
+		final String soundKey = config.getString("teleport.sound.type", "ENTITY_ENDERMAN_TELEPORT").toLowerCase().replace("_", ".");
+		final Sound sound = RegistryAccess.registryAccess()
+				.getRegistry(RegistryKey.SOUND_EVENT)
+				.get(NamespacedKey.minecraft(soundKey));
+		SOUND_TYPE = sound != null ? sound : Sound.ENTITY_ENDERMAN_TELEPORT;
 		SOUND_VOLUME = (float) config.getDouble("teleport.sound.volume");
 		SOUND_PITCH = (float) config.getDouble("teleport.sound.pitch");
 		SOUND_ENABLE = config.getBoolean("teleport.sound.enable");

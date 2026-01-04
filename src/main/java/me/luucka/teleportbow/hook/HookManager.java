@@ -56,10 +56,7 @@ public final class HookManager {
 		// Check for legacy FastAsyncWorldEdit installations.
 		final Plugin worldEdit = Bukkit.getPluginManager().getPlugin("WorldEdit");
 
-		if (worldEdit != null && worldEdit.isEnabled() && "Fast Async WorldEdit plugin".equals(worldEdit.getDescription().getDescription()))
-			return true;
-
-		return false;
+		return worldEdit != null && worldEdit.isEnabled() && "Fast Async WorldEdit plugin".equals(worldEdit.getPluginMeta().getDescription());
 	}
 
 	/**
@@ -103,7 +100,7 @@ public final class HookManager {
 		Plugin lookup = null;
 
 		for (final Plugin otherPlugin : Bukkit.getPluginManager().getPlugins())
-			if (otherPlugin.getDescription().getName().equals(name)) {
+			if (otherPlugin.getPluginMeta().getName().equals(name)) {
 				lookup = otherPlugin;
 
 				break;
@@ -136,7 +133,7 @@ class WorldEditHook {
 		try {
 			Class.forName("com.sk89q.worldedit.world.World");
 			ok = true;
-		} catch (final ClassNotFoundException e) {
+		} catch (final ClassNotFoundException ignored) {
 		}
 
 		this.legacy = !ok;
@@ -150,7 +147,7 @@ class WorldGuardHook {
 	public WorldGuardHook(final WorldEditHook we) {
 		final Plugin wg = Bukkit.getPluginManager().getPlugin("WorldGuard");
 
-		this.legacy = !wg.getDescription().getVersion().startsWith("7") || we != null && we.legacy;
+		this.legacy = !wg.getPluginMeta().getVersion().startsWith("7") || we != null && we.legacy;
 	}
 
 	public List<String> getRegionsAt(final Location location) {

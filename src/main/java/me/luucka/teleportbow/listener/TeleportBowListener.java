@@ -46,7 +46,7 @@ public final class TeleportBowListener implements Listener {
 
 	@EventHandler
 	public void onPlayerShootBow(final EntityShootBowEvent event) {
-		if (!(event.getEntity() instanceof Player)) {
+		if (!(event.getEntity() instanceof Player player)) {
 			return;
 		}
 
@@ -54,8 +54,6 @@ public final class TeleportBowListener implements Listener {
 		if (bow == null || !BowManager.isValidBow(bow)) {
 			return;
 		}
-
-		final Player player = (Player) event.getEntity();
 
 		if (Settings.NEEDED_PERMISSION) {
 			if (!player.hasPermission("tpbow.use") && !player.hasPermission("tpbow.bypass")) {
@@ -98,11 +96,10 @@ public final class TeleportBowListener implements Listener {
 	@EventHandler
 	public void onArrowHit(final ProjectileHitEvent event) {
 		if (event.getEntityType() != EntityType.ARROW ||
-				!(event.getEntity().getShooter() instanceof Player)) {
+				!(event.getEntity().getShooter() instanceof Player player)) {
 			return;
 		}
 
-		final Player player = (Player) event.getEntity().getShooter();
 		final Location playerLocation = player.getLocation();
 		final Projectile projectile = event.getEntity();
 		final int entityId = projectile.getEntityId();
@@ -121,7 +118,8 @@ public final class TeleportBowListener implements Listener {
 			(new BukkitRunnable() {
 				@Override
 				public void run() {
-					Settings.SOUND_TYPE.play(player, Settings.SOUND_VOLUME, Settings.SOUND_PITCH);
+//					Settings.SOUND_TYPE.play(player, Settings.SOUND_VOLUME, Settings.SOUND_PITCH);
+					player.playSound(player.getLocation(), Settings.SOUND_TYPE, Settings.SOUND_VOLUME, Settings.SOUND_PITCH);
 				}
 			}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 1L);
 		}
@@ -131,8 +129,7 @@ public final class TeleportBowListener implements Listener {
 
 	@EventHandler
 	public void onPlayerFallAfterTeleport(final EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-			final Player player = (Player) event.getEntity();
+		if (event.getEntity() instanceof Player player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
 			if (BowManager.getTpArrows().containsKey(player.getUniqueId())) {
 				event.setCancelled(true);
 			}
@@ -215,14 +212,11 @@ public final class TeleportBowListener implements Listener {
 		List<String> regions = HookManager.getRegions(player.getLocation());
 		if (regions.isEmpty()) return false;
 
-		switch (type) {
-			case "whitelist":
-				return regions.stream().noneMatch(Settings.REGIONS_LIST::contains);
-			case "blacklist":
-				return regions.stream().anyMatch(Settings.REGIONS_LIST::contains);
-			default:
-				return false;
-		}
+		return switch (type) {
+			case "whitelist" -> regions.stream().noneMatch(Settings.REGIONS_LIST::contains);
+			case "blacklist" -> regions.stream().anyMatch(Settings.REGIONS_LIST::contains);
+			default -> false;
+		};
 	}
 
 }
