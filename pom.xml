@@ -41,19 +41,15 @@
                         </goals>
                     </execution>
                 </executions>
-                <!--                <configuration>-->
-                <!--                    <createDependencyReducedPom>false</createDependencyReducedPom>-->
-                <!--                    <relocations>-->
-                <!--                        <relocation>-->
-                <!--                            <pattern>de.tr7zw.changeme.nbtapi</pattern>-->
-                <!--                            <shadedPattern>${project.groupId}.${project.artifactId}.lib.nbtapi</shadedPattern>-->
-                <!--                        </relocation>-->
-                <!--                        <relocation>-->
-                <!--                            <pattern>net.byteflux.libby</pattern>-->
-                <!--                            <shadedPattern>${project.groupId}.${project.artifactId}.lib.libby</shadedPattern>-->
-                <!--                        </relocation>-->
-                <!--                    </relocations>-->
-                <!--                </configuration>-->
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <relocations>
+                        <relocation>
+                            <pattern>me.luucka.pillars</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.lib.pillar</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -91,6 +87,11 @@
             <artifactId>paper-api</artifactId>
             <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.luucka</groupId>
+            <artifactId>pillars</artifactId>
+            <version>0.1</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>

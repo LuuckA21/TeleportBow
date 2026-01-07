@@ -1,6 +1,7 @@
 package me.luucka.teleportbow.util;
 
 import me.luucka.teleportbow.TeleportBow;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -78,8 +79,8 @@ public final class ItemBuilder {
 	 *
 	 * @param name the name to set
 	 */
-	public ItemBuilder setDisplayName(final String name) {
-		meta.setDisplayName(name);
+	public ItemBuilder setDisplayName(final Component name) {
+		meta.displayName(name);
 		return this;
 	}
 
@@ -89,8 +90,8 @@ public final class ItemBuilder {
 	 *
 	 * @param lore the lore that will be set
 	 */
-	public ItemBuilder setLore(final List<String> lore) {
-		meta.setLore(lore);
+	public ItemBuilder setLore(final List<Component> lore) {
+		meta.lore(lore);
 		return this;
 	}
 
@@ -155,7 +156,7 @@ public final class ItemBuilder {
 	private static ItemStack setMetadata(final ItemStack item, final String key, final String value) {
 		if (value == null || value.isEmpty()) return item;
 		final ItemStack clone = new ItemStack(item);
-		final NamespacedKey namespacedKey = new NamespacedKey(TeleportBow.getInstance(), TeleportBow.getTAG_PREFIX() + key);
+		final NamespacedKey namespacedKey = new NamespacedKey(TeleportBow.getInstance(), TeleportBow.TAG_PREFIX + key);
 
 		if (MinecraftVersion.equals(MinecraftVersion.V.v1_21) && MinecraftVersion.getSubversion() < 4) {
 			final ItemMeta meta = clone.getItemMeta();

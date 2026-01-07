@@ -140,9 +140,7 @@ public final class Settings {
 		final String regionsListType = config.getString("regions.list-type", "none");
 		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
 		REGIONS_LIST.addAll(config.getStringList("regions.list"));
-
-//		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
-//		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
+		
 		final String soundKey = config.getString("teleport.sound.type", "ENTITY_ENDERMAN_TELEPORT").toLowerCase().replace("_", ".");
 		final Sound sound = RegistryAccess.registryAccess()
 				.getRegistry(RegistryKey.SOUND_EVENT)

@@ -1,8 +1,8 @@
 bow:
   type: "BOW"
-  name: "&b&lTeleport&3&lBow"
+  name: "<aqua><bold>Teleport</bold><dark_aqua><bold>Bow</bold>"
   lore:
-    - "&7Shoot an arrow to teleport"
+    - "<gray>Shoot an arrow to teleport"
   slot: 0
   arrow-slot: 9
   arrow-damage: false
@@ -33,22 +33,22 @@ regions:
 teleport:
   sound:
     # Sound list:
-    # https://pck.li/xseriessounds
+    # https://pck.li/sounds
     type: "ENTITY_ENDERMAN_TELEPORT"
     volume: 1.0
     pitch: 1.0
     enable: true
 
 message:
-  prefix: "&7[&b&lTeleport&3&lBow&7]"
-  reload: "&2Plugin reload!"
-  no-console: "&cYou cannot run this command!"
-  no-perm: "&cYou do not have the permission!"
-  usage: "&aUsage:"
-  player-not-found: "&cThe player &7{player} &cdoes not exists"
-  world-not-allowed: "&cThe Bow in this world is not allowed"
-  region-not-allowed: "&cThe Bow in this region is not allowed"
-  bow-not-allowed: "&cYou can't use this bow"
+  prefix: "<gray>[<bold><aqua>Teleport</aqua><dark_aqua>Bow</dark_aqua></bold>]"
+  reload: "<dark_green>Plugin reload!"
+  no-console: "<red>You cannot run this command!"
+  no-perm: "<red>You do not have the permission!"
+  usage: "<green>Usage:"
+  player-not-found: "<red>The player <gray>{player} <red>does not exists"
+  world-not-allowed: "<red>The Bow in this world is not allowed"
+  region-not-allowed: "<red>The Bow in this region is not allowed"
+  bow-not-allowed: "<red>You can't use this bow"
 
 check-for-updates: true
 

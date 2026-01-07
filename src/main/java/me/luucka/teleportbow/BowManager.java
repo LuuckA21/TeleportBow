@@ -42,7 +42,7 @@ public final class BowManager {
 	public static boolean isValidBow(final ItemStack bow) {
 		if (bow.getType() != Material.BOW && bow.getType() != Material.CROSSBOW) return false;
 
-		final String key = bow.getPersistentDataContainer().get(new NamespacedKey(TeleportBow.getInstance(), TeleportBow.getTAG_PREFIX() + "tpbow"), PersistentDataType.STRING);
+		final String key = bow.getPersistentDataContainer().get(new NamespacedKey(TeleportBow.getInstance(), TeleportBow.TAG_PREFIX + "tpbow"), PersistentDataType.STRING);
 		if (key == null || key.isEmpty()) return false;
 		return key.equals("TpBow");
 	}

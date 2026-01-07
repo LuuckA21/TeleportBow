@@ -1,32 +1,21 @@
 package me.luucka.teleportbow.util;
 
-import net.md_5.bungee.api.ChatColor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Color {
 
-	private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
-
-	private Color() {
+	public static Component colorize(final String input) {
+		return MiniMessage.miniMessage().deserialize(input);
 	}
 
-	public static String colorize(String input) {
-		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_16)) {
-			Matcher match = pattern.matcher(input);
-			while (match.find()) {
-				String color = input.substring(match.start(), match.end());
-				input = input.replace(color, ChatColor.of(color) + "");
-				match = pattern.matcher(input);
-			}
-		}
-		return ChatColor.translateAlternateColorCodes('&', input);
-	}
-
-	public static List<String> colorize(List<String> inputs) {
+	public static List<Component> colorize(List<String> inputs) {
 		return inputs.stream()
 				.map(Color::colorize)
 				.collect(Collectors.toList());
