@@ -20,6 +20,11 @@ public final class TeleportBow extends JavaPlugin {
 	private BukkitLibraryManager libraryManager;
 
 	@Override
+	public void onLoad() {
+		MinecraftVersion.init();
+	}
+
+	@Override
 	public void onEnable() {
 		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_7)) {
 			getLogger().severe("Minecraft version " + MinecraftVersion.getFullVersion() + " is not supported!");
