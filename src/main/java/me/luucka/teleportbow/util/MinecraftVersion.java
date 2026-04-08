@@ -147,32 +147,6 @@ public final class MinecraftVersion {
 		return compareBase(current, version.toVersion()) >= 0;
 	}
 
-	public static boolean atMost(V version) {
-		return compareBase(current, version.toVersion()) <= 0;
-	}
-
-	// --- Comparison methods (raw major/minor) ---
-
-	public static boolean equals(int major, int minor) {
-		return compareBase(current, new Version(major, minor, 0)) == 0;
-	}
-
-	public static boolean olderThan(int major, int minor) {
-		return compareBase(current, new Version(major, minor, 0)) < 0;
-	}
-
-	public static boolean newerThan(int major, int minor) {
-		return compareBase(current, new Version(major, minor, 0)) > 0;
-	}
-
-	public static boolean atLeast(int major, int minor) {
-		return compareBase(current, new Version(major, minor, 0)) >= 0;
-	}
-
-	public static boolean atMost(int major, int minor) {
-		return compareBase(current, new Version(major, minor, 0)) <= 0;
-	}
-
 	/**
 	 * Returns the full version string, e.g.: 1.20.6 | 26.1 | 26.1.1
 	 */

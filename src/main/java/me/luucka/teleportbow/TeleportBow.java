@@ -35,13 +35,12 @@ public final class TeleportBow extends JavaPlugin {
 
 		instance = this;
 
-		this.libraryManager = new BukkitLibraryManager(this);
+		libraryManager = new BukkitLibraryManager(this);
 		libraryManager.addMavenCentral();
 		loadLibraries();
 
 		Settings.load();
 
-//		this.worldGuardRegionService = hookWorldGuard();
 		HookManager.loadDependencies();
 
 		if (Settings.BSTATS) {
