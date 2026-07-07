@@ -26,9 +26,9 @@ public final class TeleportBow extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_7)) {
+		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_8)) {
 			getLogger().severe("Minecraft version " + MinecraftVersion.getFullVersion() + " is not supported!");
-			getLogger().severe("Use at least Minecraft version " + MinecraftVersion.V.v1_7);
+			getLogger().severe("Use at least Minecraft version " + MinecraftVersion.V.v1_8);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -53,6 +53,7 @@ public final class TeleportBow extends JavaPlugin {
 		}
 
 		getCommand("tpbow").setExecutor(new TpBowCommand());
+//		getCommand("testtpbow").setExecutor(new TestBowCommand());
 
 		getServer().getPluginManager().registerEvents(new TeleportBowListener(), this);
 	}
