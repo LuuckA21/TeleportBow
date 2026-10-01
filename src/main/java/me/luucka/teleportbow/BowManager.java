@@ -13,6 +13,7 @@ import me.luucka.teleportbow.util.NbtPdcUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.UUID;
 
@@ -35,9 +36,47 @@ public final class BowManager {
 				.make();
 	}
 
+	/**
+	 * Gives the bow and the arrow, removing the bows the player already has.
+	 */
 	public static void giveBow(final Player player) {
-		player.getInventory().setItem(Settings.BOW_SLOT, createBow());
-		player.getInventory().setItem(Settings.ARROW_SLOT, new ItemStack(Material.ARROW, 1));
+		removeBows(player.getInventory());
+		placeItem(player, Settings.BOW_SLOT, createBow());
+		giveArrow(player);
+	}
+
+	/**
+	 * Puts an arrow in the arrow slot, unless it already contains arrows.
+	 */
+	public static void giveArrow(final Player player) {
+		final ItemStack current = player.getInventory().getItem(Settings.ARROW_SLOT);
+		if (current != null && current.getType() == Material.ARROW) return;
+
+		placeItem(player, Settings.ARROW_SLOT, new ItemStack(Material.ARROW, 1));
+	}
+
+	private static void removeBows(final PlayerInventory inventory) {
+		final ItemStack[] contents = inventory.getContents();
+		for (int slot = 0; slot < contents.length; slot++) {
+			if (contents[slot] != null && isValidBow(contents[slot])) {
+				inventory.setItem(slot, null);
+			}
+		}
+	}
+
+	/**
+	 * Puts the item in the slot, the previous item is moved to a free slot or dropped if the inventory is full.
+	 */
+	private static void placeItem(final Player player, final int slot, final ItemStack item) {
+		final PlayerInventory inventory = player.getInventory();
+		final ItemStack previous = inventory.getItem(slot);
+		inventory.setItem(slot, item);
+
+		if (previous == null || previous.getType() == Material.AIR) return;
+
+		for (final ItemStack leftover : inventory.addItem(previous).values()) {
+			player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+		}
 	}
 
 	public static boolean isValidBow(final ItemStack bow) {

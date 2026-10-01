@@ -38,7 +38,11 @@ public final class Settings {
 
 	public static boolean CAN_BE_SWAPPED = true;
 
+	public static boolean KEEP_ON_DEATH = false;
+
 	// WORLDS ----------------------------------------------------------------------------------------------------------
+
+	private static final Set<String> LIST_TYPES = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 
 	public static String WORLDS_LIST_TYPE = "none";
 
@@ -92,6 +96,7 @@ public final class Settings {
 		newFieldsFromV171ToV180();
 		newFieldsFromV184ToV190();
 		newFieldsFromV190ToV191();
+		newFieldsFromV110ToV1101();
 		reload();
 	}
 
@@ -126,16 +131,13 @@ public final class Settings {
 		CAN_BE_MOVED_IN_INVENTORY = config.getBoolean("bow.can-be-moved-in-inventory");
 		CAN_BE_DROPPED = config.getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = config.getBoolean("bow.can-be-swapped");
+		KEEP_ON_DEATH = config.getBoolean("bow.keep-on-death");
 
-		final Set<String> validWorldsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
-		final String worldsListType = config.getString("worlds.list-type", "none");
-		WORLDS_LIST_TYPE = validWorldsListType.contains(worldsListType.toLowerCase()) ? worldsListType : "none";
-		WORLDS_LIST.addAll(config.getStringList("worlds.list"));
+		WORLDS_LIST_TYPE = getListType(config, "worlds.list-type");
+		WORLDS_LIST = new ArrayList<>(config.getStringList("worlds.list"));
 
-		final Set<String> validRegionsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
-		final String regionsListType = config.getString("regions.list-type", "none");
-		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
-		REGIONS_LIST.addAll(config.getStringList("regions.list"));
+		REGIONS_LIST_TYPE = getListType(config, "regions.list-type");
+		REGIONS_LIST = new ArrayList<>(config.getStringList("regions.list"));
 
 		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
 		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
@@ -156,6 +158,11 @@ public final class Settings {
 		CHECK_FOR_UPDATES = config.getBoolean("check-for-updates");
 
 		BSTATS = config.getBoolean("bstats");
+	}
+
+	private static String getListType(final FileConfiguration config, final String path) {
+		final String type = config.getString(path, "none").toLowerCase();
+		return LIST_TYPES.contains(type) ? type : "none";
 	}
 
 	private static String _getPrefix() {
@@ -203,6 +210,15 @@ public final class Settings {
 
 		setIfMissing(config, "message.region-not-allowed", "&cThe Bow in this region is not allowed");
 		setIfMissing(config, "message.bow-not-allowed", "&cYou can't use this bow");
+
+		plugin.saveConfig();
+	}
+
+	private static void newFieldsFromV110ToV1101() {
+		final JavaPlugin plugin = TeleportBow.getInstance();
+		final FileConfiguration config = TeleportBow.getInstance().getConfig();
+
+		setIfMissing(config, "bow.keep-on-death", false);
 
 		plugin.saveConfig();
 	}

@@ -11,6 +11,8 @@ bow:
   can-be-moved-in-inventory: true
   can-be-dropped: true
   can-be-swapped: true
+  # Keep the bow when the player dies, it is given back on respawn
+  keep-on-death: false
 
 worlds:
   # whitelist - Allow only worlds in this list
