@@ -96,9 +96,7 @@ public final class ItemBuilder {
 	 * This Method does silently ignore double set itemFlags.
 	 */
 	public ItemBuilder hideAttributes() {
-		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_8)) {
-			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-		}
+		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		return this;
 	}
 
@@ -108,9 +106,7 @@ public final class ItemBuilder {
 	 * This Method does silently ignore double set itemFlags.
 	 */
 	public ItemBuilder hideUnbreakable() {
-		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_8)) {
-			meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-		}
+		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 		return this;
 	}
 
