@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # A recent JDK is needed to read the Spigot 26.x and WorldGuard classes,
+      # the plugin is still compiled for Java 8 (see pom.xml)
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build
+        run: mvn -B package
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: TeleportBow
+          path: target/TeleportBow-*.jar
+          if-no-files-found: error
