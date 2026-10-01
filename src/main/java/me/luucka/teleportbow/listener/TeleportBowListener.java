@@ -170,7 +170,7 @@ public final class TeleportBowListener implements Listener {
 
 	@EventHandler
 	public void onDeath(final PlayerDeathEvent event) {
-		if (Settings.CAN_BE_DROPPED) return;
+		if (!Settings.KEEP_ON_DEATH) return;
 
 		if (event.getDrops().removeIf(BowManager::isValidBow)) {
 			bowLostOnDeath.add(event.getEntity().getUniqueId());
