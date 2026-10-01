@@ -14,13 +14,13 @@ permissions:
     description: Give players with op everything by default
     children:
       tpbow.give: true
-      tpbow.relaod: true
+      tpbow.reload: true
       tpbow.bypass: true
       tpbow.use: true
   tpbow.give:
     default: false
     description: Allow you to use /tpbow give command
-  tpbow.relaod:
+  tpbow.reload:
     default: false
     description: Allow you to use /tpbow reload command
   tpbow.bypass:
