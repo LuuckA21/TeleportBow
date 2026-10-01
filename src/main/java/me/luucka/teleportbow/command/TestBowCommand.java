@@ -31,7 +31,7 @@ public class TestBowCommand implements TabExecutor {
 					.setUnbreakable(true)
 					.hideAttributes()
 					.hideUnbreakable()
-					.tag("tpbow", "TpBow")
+					.addNBTTag("tpbow", "TpBow")
 					.make();
 			player.getInventory().addItem(bowNbt);
 		} else if ("pdc".equals(args[0])) {
@@ -40,7 +40,7 @@ public class TestBowCommand implements TabExecutor {
 					.setUnbreakable(true)
 					.hideAttributes()
 					.hideUnbreakable()
-					.pdc("tpbow", "TpBow")
+					.addPdcTag("tpbow", "TpBow")
 					.make();
 			player.getInventory().addItem(bowPdc);
 		} else {

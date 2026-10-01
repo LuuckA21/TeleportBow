@@ -2,19 +2,16 @@ package me.luucka.teleportbow;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.ItemBuilder;
 import me.luucka.teleportbow.util.MinecraftVersion;
+import me.luucka.teleportbow.util.NbtPdcUtil;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -33,8 +30,8 @@ public final class BowManager {
 				.setUnbreakable(true)
 				.hideAttributes()
 				.hideUnbreakable()
-				.tag("tpbow", "TpBow")
-				.pdc("tpbow", "TpBow")
+				.addNBTTag("tpbow", "TpBow")
+				.addPdcTag("tpbow", "TpBow")
 				.make();
 	}
 
@@ -58,32 +55,20 @@ public final class BowManager {
 //		System.out.println("----- getTagWithFallback -----");
 		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
 //			System.out.println("Using NBT fallback for tag on item");
-			return NBT.get(item, nbt -> {
-				return nbt.getString(key);
-			});
+			return NbtPdcUtil.getNBTTag(item, key);
 		}
 
-		String value = getPersistentData(item, key);
+		String value = NbtPdcUtil.getPDCTag(item, key);
 		if (value != null && !value.isEmpty()) {
 //			System.out.println("Using and find PDC");
 			return value;
 		}
 
-		value = NBT.get(item, nbt -> {
-			return nbt.getString(key);
-		});
+		value = NbtPdcUtil.getNBTTag(item, key);
 		if (value != null && !value.isEmpty()) {
 //			System.out.println("Using NBT fallback");
-			ItemBuilder.setPersistentDataContainer(item, key, value);
+			NbtPdcUtil.setPDCTag(item, key, value);
 		}
 		return value;
-	}
-
-	private static String getPersistentData(final ItemStack item, final String key) {
-		final ItemMeta meta = item.getItemMeta();
-		if (meta == null) return null;
-
-		final NamespacedKey namespacedKey = new NamespacedKey(TeleportBow.getInstance(), key);
-		return meta.getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING);
 	}
 }
