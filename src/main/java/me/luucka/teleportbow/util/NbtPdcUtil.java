@@ -1,59 +1,45 @@
 package me.luucka.teleportbow.util;
 
-import de.tr7zw.changeme.nbtapi.NBT;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.luucka.teleportbow.TeleportBow;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Map;
 
+/**
+ * Stores custom String tags on items.
+ * <p>
+ * 1.14+ uses the PersistentDataContainer, older versions (1.8 - 1.13.2) write a root NBT tag through NMS reflection.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NbtPdcUtil {
 
-	public static void setNBTTags(final ItemStack item, final Map<String, String> tags) {
-		tags.forEach((key, value) -> setNBTTag(item, key, value));
+	public static boolean isPdcSupported() {
+		return MinecraftVersion.atLeast(MinecraftVersion.V.v1_14);
 	}
 
-	public static void setNBTTag(final ItemStack item, final String key, final String value) {
-		final boolean remove = value == null || value.isEmpty();
-		NBT.modify(item, tag -> {
-			if (remove) {
-				if (tag.hasTag(key)) tag.removeKey(key);
-			} else {
-				tag.setString(key, value);
-			}
-		});
+	public static void setTags(final ItemStack item, final Map<String, String> tags) {
+		tags.forEach((key, value) -> setTag(item, key, value));
 	}
 
-	public static String getNBTTag(final ItemStack item, final String key) {
-		return NBT.get(item, nbt -> {
-			return nbt.getString(key);
-		});
+	/**
+	 * Sets a tag on the item, a null or empty value removes it.
+	 */
+	public static void setTag(final ItemStack item, final String key, final String value) {
+		final String normalized = value == null || value.isEmpty() ? null : value;
+		if (isPdcSupported()) {
+			PdcTags.set(item, key, normalized);
+		} else {
+			NbtTags.set(item, key, normalized);
+		}
 	}
 
-	public static void setPDCTags(final ItemStack item, final Map<String, String> tags) {
-		tags.forEach((key, value) -> setPDCTag(item, key, value));
-	}
-
-	public static void setPDCTag(final ItemStack item, final String key, final String value) {
-		final ItemMeta meta = item.getItemMeta();
-		if (meta == null) return;
-
-		final NamespacedKey namespacedKey = new NamespacedKey(TeleportBow.getInstance(), key);
-		meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.STRING, value);
-		item.setItemMeta(meta);
-	}
-
-	public static String getPDCTag(final ItemStack item, final String key) {
-		final ItemMeta meta = item.getItemMeta();
-		if (meta == null) return null;
-
-		final NamespacedKey namespacedKey = new NamespacedKey(TeleportBow.getInstance(), key);
-		return meta.getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING);
+	/**
+	 * @return the tag value, or null if the item does not have it
+	 */
+	public static String getTag(final ItemStack item, final String key) {
+		final String value = isPdcSupported() ? PdcTags.get(item, key) : NbtTags.get(item, key);
+		return value == null || value.isEmpty() ? null : value;
 	}
 
 }
