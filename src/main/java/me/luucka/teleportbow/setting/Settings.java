@@ -40,6 +40,8 @@ public final class Settings {
 
 	// WORLDS ----------------------------------------------------------------------------------------------------------
 
+	private static final Set<String> LIST_TYPES = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
+
 	public static String WORLDS_LIST_TYPE = "none";
 
 	public static List<String> WORLDS_LIST = new ArrayList<>();
@@ -127,15 +129,11 @@ public final class Settings {
 		CAN_BE_DROPPED = config.getBoolean("bow.can-be-dropped");
 		CAN_BE_SWAPPED = config.getBoolean("bow.can-be-swapped");
 
-		final Set<String> validWorldsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
-		final String worldsListType = config.getString("worlds.list-type", "none");
-		WORLDS_LIST_TYPE = validWorldsListType.contains(worldsListType.toLowerCase()) ? worldsListType : "none";
-		WORLDS_LIST.addAll(config.getStringList("worlds.list"));
+		WORLDS_LIST_TYPE = getListType(config, "worlds.list-type");
+		WORLDS_LIST = new ArrayList<>(config.getStringList("worlds.list"));
 
-		final Set<String> validRegionsListType = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
-		final String regionsListType = config.getString("regions.list-type", "none");
-		REGIONS_LIST_TYPE = validRegionsListType.contains(worldsListType.toLowerCase()) ? regionsListType : "none";
-		REGIONS_LIST.addAll(config.getStringList("regions.list"));
+		REGIONS_LIST_TYPE = getListType(config, "regions.list-type");
+		REGIONS_LIST = new ArrayList<>(config.getStringList("regions.list"));
 
 		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
 		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
@@ -156,6 +154,11 @@ public final class Settings {
 		CHECK_FOR_UPDATES = config.getBoolean("check-for-updates");
 
 		BSTATS = config.getBoolean("bstats");
+	}
+
+	private static String getListType(final FileConfiguration config, final String path) {
+		final String type = config.getString(path, "none").toLowerCase();
+		return LIST_TYPES.contains(type) ? type : "none";
 	}
 
 	private static String _getPrefix() {

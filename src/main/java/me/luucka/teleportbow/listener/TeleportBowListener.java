@@ -18,19 +18,27 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static me.luucka.teleportbow.util.Color.colorize;
 
 public final class TeleportBowListener implements Listener {
+
+	// Fall damage is ignored for a short time after the teleport
+	private static final long FALL_IMMUNITY_MILLIS = 1000L;
+
+	private final Map<UUID, Long> fallImmunityUntil = new HashMap<>();
 
 	public TeleportBowListener() {
 		registerEvent(new SwapHandListener());
@@ -87,12 +95,7 @@ public final class TeleportBowListener implements Listener {
 
 		Bukkit.getScheduler().runTask(TeleportBow.getInstance(), () -> player.getInventory().setItem(Settings.ARROW_SLOT, new ItemStack(Material.ARROW, 1)));
 
-		(new BukkitRunnable() {
-			@Override
-			public void run() {
-				BowManager.getTpArrows().remove(player.getUniqueId(), entityId);
-			}
-		}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 600L);
+		Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(player.getUniqueId(), entityId), 600L);
 	}
 
 	@EventHandler
@@ -115,25 +118,23 @@ public final class TeleportBowListener implements Listener {
 
 		event.getEntity().remove();
 
+		player.setFallDistance(0F);
 		player.teleport(arrowLocation);
+		fallImmunityUntil.put(player.getUniqueId(), System.currentTimeMillis() + FALL_IMMUNITY_MILLIS);
 
 		if (Settings.SOUND_ENABLE) {
-			(new BukkitRunnable() {
-				@Override
-				public void run() {
-					Settings.SOUND_TYPE.play(player, Settings.SOUND_VOLUME, Settings.SOUND_PITCH);
-				}
-			}).runTaskLaterAsynchronously(TeleportBow.getInstance(), 1L);
+			Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> Settings.SOUND_TYPE.play(player, Settings.SOUND_VOLUME, Settings.SOUND_PITCH), 1L);
 		}
 
-		Bukkit.getScheduler().runTaskLaterAsynchronously(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(player.getUniqueId(), entityId), 20L);
+		// Kept for a short time, so onPlayerHitByArrow still recognizes the arrow
+		Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(player.getUniqueId(), entityId), 20L);
 	}
 
 	@EventHandler
 	public void onPlayerFallAfterTeleport(final EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-			final Player player = (Player) event.getEntity();
-			if (BowManager.getTpArrows().containsKey(player.getUniqueId())) {
+			final Long until = fallImmunityUntil.remove(event.getEntity().getUniqueId());
+			if (until != null && System.currentTimeMillis() <= until) {
 				event.setCancelled(true);
 			}
 		}
@@ -160,6 +161,7 @@ public final class TeleportBowListener implements Listener {
 	@EventHandler
 	public void onQuit(final PlayerQuitEvent event) {
 		BowManager.getTpArrows().removeAll(event.getPlayer().getUniqueId());
+		fallImmunityUntil.remove(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
@@ -175,9 +177,17 @@ public final class TeleportBowListener implements Listener {
 	public void onInventoryClick(final InventoryClickEvent event) {
 		if (!Settings.CAN_BE_MOVED_IN_INVENTORY) {
 			final ItemStack item = event.getCurrentItem();
-			if (item == null) return;
-			if (BowManager.isValidBow(item)) {
+			if (item != null && BowManager.isValidBow(item)) {
 				event.setCancelled(true);
+				return;
+			}
+
+			// Number keys swap the clicked slot with a hotbar slot, which can hold the bow
+			if (event.getClick() == ClickType.NUMBER_KEY) {
+				final ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+				if (hotbarItem != null && BowManager.isValidBow(hotbarItem)) {
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
