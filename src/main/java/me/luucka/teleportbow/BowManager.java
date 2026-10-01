@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.ItemBuilder;
+import me.luucka.teleportbow.util.LegacyNbtMigration;
 import me.luucka.teleportbow.util.MinecraftVersion;
 import me.luucka.teleportbow.util.NbtPdcUtil;
 import org.bukkit.Material;
@@ -30,8 +31,7 @@ public final class BowManager {
 				.setUnbreakable(true)
 				.hideAttributes()
 				.hideUnbreakable()
-				.addNBTTag("tpbow", "TpBow")
-				.addPdcTag("tpbow", "TpBow")
+				.addTag("tpbow", "TpBow")
 				.make();
 	}
 
@@ -52,23 +52,10 @@ public final class BowManager {
 	}
 
 	private static String getTagWithFallback(final ItemStack item, final String key) {
-//		System.out.println("----- getTagWithFallback -----");
-		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
-//			System.out.println("Using NBT fallback for tag on item");
-			return NbtPdcUtil.getNBTTag(item, key);
-		}
+		final String value = NbtPdcUtil.getTag(item, key);
+		if (value != null || !NbtPdcUtil.isPdcSupported()) return value;
 
-		String value = NbtPdcUtil.getPDCTag(item, key);
-		if (value != null && !value.isEmpty()) {
-//			System.out.println("Using and find PDC");
-			return value;
-		}
-
-		value = NbtPdcUtil.getNBTTag(item, key);
-		if (value != null && !value.isEmpty()) {
-//			System.out.println("Using NBT fallback");
-			NbtPdcUtil.setPDCTag(item, key, value);
-		}
-		return value;
+		// Bows created up to 1.9.6 only have the NBT tag: remove in phase 2 of the migration
+		return LegacyNbtMigration.migrate(item, key);
 	}
 }

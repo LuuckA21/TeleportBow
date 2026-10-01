@@ -2,6 +2,7 @@ package me.luucka.teleportbow.command;
 
 import me.luucka.teleportbow.setting.Settings;
 import me.luucka.teleportbow.util.ItemBuilder;
+import me.luucka.teleportbow.util.LegacyNbtMigration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -24,15 +25,17 @@ public class TestBowCommand implements TabExecutor {
 
 		if (args.length == 0) {
 			player.sendMessage(colorize("Error!"));
+			return true;
 		}
 		if ("nbt".equals(args[0])) {
+			// Bow as created up to 1.9.6, to test the NBT -> PDC migration
 			ItemStack bowNbt = new ItemBuilder(Settings.BOW_TYPE)
 					.setDisplayName(colorize("Bow NBT"))
 					.setUnbreakable(true)
 					.hideAttributes()
 					.hideUnbreakable()
-					.addNBTTag("tpbow", "TpBow")
 					.make();
+			LegacyNbtMigration.writeLegacyTag(bowNbt, "tpbow", "TpBow");
 			player.getInventory().addItem(bowNbt);
 		} else if ("pdc".equals(args[0])) {
 			ItemStack bowPdc = new ItemBuilder(Settings.BOW_TYPE)
@@ -40,7 +43,7 @@ public class TestBowCommand implements TabExecutor {
 					.setUnbreakable(true)
 					.hideAttributes()
 					.hideUnbreakable()
-					.addPdcTag("tpbow", "TpBow")
+					.addTag("tpbow", "TpBow")
 					.make();
 			player.getInventory().addItem(bowPdc);
 		} else {

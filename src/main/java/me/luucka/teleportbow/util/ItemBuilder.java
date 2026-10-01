@@ -23,8 +23,7 @@ public final class ItemBuilder {
 	private final ItemMeta meta;
 	private final int amount;
 
-	private final Map<String, String> nbtTags = new HashMap<>();
-	private final Map<String, String> pdcTags = new HashMap<>();
+	private final Map<String, String> tags = new HashMap<>();
 
 	static {
 		ITEM_FACTORY = Bukkit.getItemFactory();
@@ -57,14 +56,10 @@ public final class ItemBuilder {
 	 * @return an {@link ItemStack}
 	 */
 	public ItemStack make() {
-		ItemStack item = new ItemStack(material, amount);
+		final ItemStack item = new ItemStack(material, amount);
 		item.setItemMeta(meta);
 
-		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
-			NbtPdcUtil.setNBTTags(item, nbtTags);
-		} else {
-			NbtPdcUtil.setPDCTags(item, pdcTags);
-		}
+		NbtPdcUtil.setTags(item, tags);
 
 		return item;
 	}
@@ -147,13 +142,11 @@ public final class ItemBuilder {
 		return this;
 	}
 
-	public ItemBuilder addNBTTag(String key, String value) {
-		nbtTags.put(key, value);
-		return this;
-	}
-
-	public ItemBuilder addPdcTag(String key, String value) {
-		pdcTags.put(key, value);
+	/**
+	 * Adds a custom tag, stored as PDC on 1.14+ and as NBT on older versions.
+	 */
+	public ItemBuilder addTag(String key, String value) {
+		tags.put(key, value);
 		return this;
 	}
 
