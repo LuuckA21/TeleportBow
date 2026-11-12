@@ -12,16 +12,13 @@ import java.util.regex.Pattern;
  * - 1.20 == 1.20.6
  * - 26.1 == 26.1.1
  * <p>
- * Patch is still available through getCurrentPatch() if needed.
- * <p>
  * Must be initialized explicitly via {@link #init()} before any other method is called,
- * typically from your plugin's onEnable().
+ * typically from your plugin's onLoad().
  */
 public final class MinecraftVersion {
 
 	private static final Pattern VERSION_PATTERN = Pattern.compile("^(\\d+\\.\\d+(?:\\.\\d+)?)");
 
-	@Getter
 	private static Version current;
 
 	private MinecraftVersion() {
@@ -71,14 +68,6 @@ public final class MinecraftVersion {
 	}
 
 	/**
-	 * Returns the patch component of the current version.
-	 * Examples: 6 in 1.20.6 | 1 in 26.1.1 | 0 if absent (e.g. 1.21 or 26.1)
-	 */
-	public static int getCurrentPatch() {
-		return current.getPatch();
-	}
-
-	/**
 	 * Known base versions you may want to compare against.
 	 * <p>
 	 * Legacy format : 1.8, 1.20, 1.21...
@@ -86,11 +75,6 @@ public final class MinecraftVersion {
 	 */
 	@Getter
 	public enum V {
-		v1_3_AND_BELOW(1, 3),
-		v1_4(1, 4),
-		v1_5(1, 5),
-		v1_6(1, 6),
-		v1_7(1, 7),
 		v1_8(1, 8),
 		v1_9(1, 9),
 		v1_10(1, 10),
@@ -131,16 +115,8 @@ public final class MinecraftVersion {
 
 	// --- Comparison methods (enum) ---
 
-	public static boolean equals(V version) {
-		return compareBase(current, version.toVersion()) == 0;
-	}
-
 	public static boolean olderThan(V version) {
 		return compareBase(current, version.toVersion()) < 0;
-	}
-
-	public static boolean newerThan(V version) {
-		return compareBase(current, version.toVersion()) > 0;
 	}
 
 	public static boolean atLeast(V version) {
@@ -168,7 +144,7 @@ public final class MinecraftVersion {
 	 * Immutable parsed version with full major.minor.patch support.
 	 */
 	@Getter
-	public static final class Version implements Comparable<Version> {
+	public static final class Version {
 		private final int major;
 		private final int minor;
 		private final int patch;
@@ -177,20 +153,6 @@ public final class MinecraftVersion {
 			this.major = major;
 			this.minor = minor;
 			this.patch = patch;
-		}
-
-		/**
-		 * Full comparison including patch.
-		 */
-		@Override
-		public int compareTo(Version other) {
-			if (major != other.major)
-				return Integer.compare(major, other.major);
-
-			if (minor != other.minor)
-				return Integer.compare(minor, other.minor);
-
-			return Integer.compare(patch, other.patch);
 		}
 
 		@Override

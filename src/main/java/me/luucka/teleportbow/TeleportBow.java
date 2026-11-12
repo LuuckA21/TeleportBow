@@ -16,9 +16,6 @@ public final class TeleportBow extends JavaPlugin {
 	@Getter
 	private static TeleportBow instance;
 
-
-	private BukkitLibraryManager libraryManager;
-
 	@Override
 	public void onLoad() {
 		MinecraftVersion.init();
@@ -35,8 +32,6 @@ public final class TeleportBow extends JavaPlugin {
 
 		instance = this;
 
-		libraryManager = new BukkitLibraryManager(this);
-		libraryManager.addMavenCentral();
 		loadLibraries();
 
 		Settings.load();
@@ -45,7 +40,7 @@ public final class TeleportBow extends JavaPlugin {
 
 		if (Settings.BSTATS) {
 			getLogger().info("bStats instance loaded.");
-			Metrics metrics = new Metrics(this, 27393);
+			new Metrics(this, 27393);
 		}
 
 		if (Settings.CHECK_FOR_UPDATES) {
@@ -53,7 +48,6 @@ public final class TeleportBow extends JavaPlugin {
 		}
 
 		getCommand("tpbow").setExecutor(new TpBowCommand());
-//		getCommand("testtpbow").setExecutor(new TestBowCommand());
 
 		getServer().getPluginManager().registerEvents(new TeleportBowListener(), this);
 	}
@@ -72,13 +66,14 @@ public final class TeleportBow extends JavaPlugin {
 	}
 
 	private void loadLibraries() {
-		final Library lib = Library.builder()
+		final BukkitLibraryManager libraryManager = new BukkitLibraryManager(this);
+		libraryManager.addMavenCentral();
+		libraryManager.loadLibrary(Library.builder()
 				.groupId("com{}github{}cryptomorin")
 				.artifactId("XSeries")
+				// Keep in sync with the XSeries version in pom.xml
 				.version("14.0.0")
-
-				.build();
-		libraryManager.loadLibrary(lib);
+				.build());
 	}
 
 }

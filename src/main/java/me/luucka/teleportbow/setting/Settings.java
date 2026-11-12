@@ -1,14 +1,21 @@
 package me.luucka.teleportbow.setting;
 
 import com.cryptomorin.xseries.XSound;
+import me.luucka.teleportbow.BowManager;
 import me.luucka.teleportbow.TeleportBow;
-import me.luucka.teleportbow.util.MinecraftVersion;
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
+import static me.luucka.teleportbow.util.Color.colorize;
+
+/**
+ * Values of config.yml. The defaults are only in the config.yml of the jar: Bukkit uses it for missing keys.
+ * Messages, bow name and lore are colorized once here.
+ */
 public final class Settings {
 
 	private Settings() {
@@ -16,113 +23,99 @@ public final class Settings {
 
 	// BOW -------------------------------------------------------------------------------------------------------------
 
-	public static Material BOW_TYPE = Material.BOW;
+	public static Material BOW_TYPE;
 
-	public static String BOW_NAME = "&b&lTeleport&3&lBow";
+	public static String BOW_NAME;
 
-	public static List<String> BOW_LORE = Collections.singletonList("&7Shoot an arrow to teleport");
+	public static List<String> BOW_LORE;
 
-	public static int BOW_SLOT = 0;
+	public static int BOW_SLOT;
 
-	public static int ARROW_SLOT = 9;
+	public static int ARROW_SLOT;
 
-	public static boolean ARROW_DAMAGE = false;
+	public static boolean ARROW_DAMAGE;
 
-	public static boolean NEEDED_PERMISSION = false;
+	public static boolean NEEDED_PERMISSION;
 
-	public static boolean GIVE_ON_JOIN = true;
+	public static boolean GIVE_ON_JOIN;
 
-	public static boolean CAN_BE_MOVED_IN_INVENTORY = true;
+	public static boolean CAN_BE_MOVED_IN_INVENTORY;
 
-	public static boolean CAN_BE_DROPPED = true;
+	public static boolean CAN_BE_DROPPED;
 
-	public static boolean CAN_BE_SWAPPED = true;
+	public static boolean CAN_BE_SWAPPED;
 
-	public static boolean KEEP_ON_DEATH = false;
+	public static boolean KEEP_ON_DEATH;
 
 	// WORLDS ----------------------------------------------------------------------------------------------------------
 
 	private static final Set<String> LIST_TYPES = new HashSet<>(Arrays.asList("none", "whitelist", "blacklist"));
 
-	public static String WORLDS_LIST_TYPE = "none";
+	public static String WORLDS_LIST_TYPE;
 
-	public static List<String> WORLDS_LIST = new ArrayList<>();
+	public static List<String> WORLDS_LIST;
 
 	// REGIONS ---------------------------------------------------------------------------------------------------------
 
-	public static String REGIONS_LIST_TYPE = "none";
+	public static String REGIONS_LIST_TYPE;
 
-	public static List<String> REGIONS_LIST = new ArrayList<>();
+	public static List<String> REGIONS_LIST;
 
 	// TELEPORT - SOUND ------------------------------------------------------------------------------------------------
 
-	public static XSound SOUND_TYPE = XSound.ENTITY_ENDERMAN_TELEPORT;
+	public static XSound SOUND_TYPE;
 
-	public static float SOUND_VOLUME = 1.0f;
+	public static float SOUND_VOLUME;
 
-	public static float SOUND_PITCH = 1.0f;
+	public static float SOUND_PITCH;
 
-	public static boolean SOUND_ENABLE = true;
+	public static boolean SOUND_ENABLE;
 
 	// MESSAGE ---------------------------------------------------------------------------------------------------------
 
-	public static String PREFIX = "&7[&b&lTeleport&3&lBow&7] ";
+	public static String RELOAD;
 
-	public static String RELOAD = "&2Plugin reload!";
+	public static String NO_CONSOLE;
 
-	public static String NO_CONSOLE = "&cYou cannot run this command!";
+	public static String NO_PERM;
 
-	public static String NO_PERM = "&cYou do not have the permission!";
+	public static String USAGE;
 
-	public static String USAGE = "&aUsage:";
+	public static String PLAYER_NOT_FOUND;
 
-	public static String PLAYER_NOT_FOUND = "&cThe player &7{player} &cdoes not exists";
+	public static String WORLD_NOT_ALLOWED;
 
-	public static String WORLD_NOT_ALLOWED = "&cThe Bow in this world is not allowed";
+	public static String REGION_NOT_ALLOWED;
 
-	public static String REGION_NOT_ALLOWED = "&cThe Bow in this region is not allowed";
-
-	public static String BOW_NOT_ALLOWED = "&cYou can't use this bow";
-
+	public static String BOW_NOT_ALLOWED;
 
 	// OTHER -----------------------------------------------------------------------------------------------------------
 
-	public static boolean CHECK_FOR_UPDATES = true;
+	public static boolean CHECK_FOR_UPDATES;
 
-	public static boolean BSTATS = true;
+	public static boolean BSTATS;
 
 	public static void load() {
 		TeleportBow.getInstance().saveDefaultConfig();
-		newFieldsFromV171ToV180();
-		newFieldsFromV184ToV190();
-		newFieldsFromV190ToV191();
-		newFieldsFromV110ToV1101();
+		addMissingKeys();
 		reload();
 	}
 
 	public static void reload() {
 		final JavaPlugin plugin = TeleportBow.getInstance();
 		plugin.reloadConfig();
-		final FileConfiguration config = TeleportBow.getInstance().getConfig();
+		final FileConfiguration config = plugin.getConfig();
 
 		try {
-			final String bowTypeConfig = config.getString("bow.type", "BOW").toUpperCase();
-			final Material bowType = Material.valueOf(bowTypeConfig);
-
-			// Check compatibility based on Minecraft version
-			if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
-				// For versions older than 1.14, only allow BOW
-				BOW_TYPE = Material.BOW;
-			} else {
-				// For versions 1.14 and newer, allow BOW or CROSSBOW
-				BOW_TYPE = (bowType == Material.BOW || bowType == Material.CROSSBOW) ? bowType : Material.BOW;
-			}
+			final Material bowType = Material.valueOf(config.getString("bow.type").toUpperCase());
+			BOW_TYPE = BowManager.isBowMaterial(bowType) ? bowType : Material.BOW;
 		} catch (IllegalArgumentException e) {
+			// Unknown material, e.g. CROSSBOW before 1.14
 			BOW_TYPE = Material.BOW;
 		}
 
-		BOW_NAME = config.getString("bow.name");
-		BOW_LORE = config.getStringList("bow.lore");
+		BOW_NAME = colorize(config.getString("bow.name"));
+		BOW_LORE = colorize(config.getStringList("bow.lore"));
 		BOW_SLOT = config.getInt("bow.slot");
 		ARROW_SLOT = config.getInt("bow.arrow-slot");
 		if (BOW_SLOT < 0 || BOW_SLOT > 35 || ARROW_SLOT < 0 || ARROW_SLOT > 35 || BOW_SLOT == ARROW_SLOT) {
@@ -144,21 +137,21 @@ public final class Settings {
 		REGIONS_LIST_TYPE = getListType(config, "regions.list-type");
 		REGIONS_LIST = new ArrayList<>(config.getStringList("regions.list"));
 
-		final Optional<XSound> optionalSoundType = XSound.of(config.getString("teleport.sound.type"));
-		SOUND_TYPE = optionalSoundType.orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
+		SOUND_TYPE = XSound.of(config.getString("teleport.sound.type")).orElse(XSound.ENTITY_ENDERMAN_TELEPORT);
 		SOUND_VOLUME = (float) config.getDouble("teleport.sound.volume");
 		SOUND_PITCH = (float) config.getDouble("teleport.sound.pitch");
 		SOUND_ENABLE = config.getBoolean("teleport.sound.enable");
 
-		PREFIX = _getPrefix();
-		RELOAD = PREFIX + config.getString("message.reload");
-		NO_CONSOLE = PREFIX + config.getString("message.no-console");
-		NO_PERM = PREFIX + config.getString("message.no-perm");
-		USAGE = PREFIX + config.getString("message.usage");
-		PLAYER_NOT_FOUND = PREFIX + config.getString("message.player-not-found");
-		WORLD_NOT_ALLOWED = PREFIX + config.getString("message.world-not-allowed");
-		REGION_NOT_ALLOWED = PREFIX + config.getString("message.region-not-allowed");
-		BOW_NOT_ALLOWED = PREFIX + config.getString("message.bow-not-allowed");
+		final String prefix = config.getString("message.prefix");
+		final String messagePrefix = prefix == null || prefix.isEmpty() ? "" : prefix + " ";
+		RELOAD = colorize(messagePrefix + config.getString("message.reload"));
+		NO_CONSOLE = colorize(messagePrefix + config.getString("message.no-console"));
+		NO_PERM = colorize(messagePrefix + config.getString("message.no-perm"));
+		USAGE = colorize(messagePrefix + config.getString("message.usage"));
+		PLAYER_NOT_FOUND = colorize(messagePrefix + config.getString("message.player-not-found"));
+		WORLD_NOT_ALLOWED = colorize(messagePrefix + config.getString("message.world-not-allowed"));
+		REGION_NOT_ALLOWED = colorize(messagePrefix + config.getString("message.region-not-allowed"));
+		BOW_NOT_ALLOWED = colorize(messagePrefix + config.getString("message.bow-not-allowed"));
 
 		CHECK_FOR_UPDATES = config.getBoolean("check-for-updates");
 
@@ -166,74 +159,31 @@ public final class Settings {
 	}
 
 	private static String getListType(final FileConfiguration config, final String path) {
-		final String type = config.getString(path, "none").toLowerCase();
+		final String type = config.getString(path).toLowerCase();
 		return LIST_TYPES.contains(type) ? type : "none";
 	}
 
-	private static String _getPrefix() {
-		String prefix = TeleportBow.getInstance().getConfig().getString("message.prefix");
-		return (prefix == null || prefix.isEmpty()) ? "" : prefix + " ";
-	}
-
-	private static void newFieldsFromV171ToV180() {
+	/**
+	 * Writes to the user's file the options added by plugin updates, saving it only if something is missing.
+	 */
+	private static void addMissingKeys() {
 		final JavaPlugin plugin = TeleportBow.getInstance();
-		final FileConfiguration config = TeleportBow.getInstance().getConfig();
+		final FileConfiguration config = plugin.getConfig();
+		final Configuration defaults = config.getDefaults();
+		if (defaults == null) return;
 
-		setIfMissing(config, "bow.type", "BOW");
+		// Without copyDefaults, getKeys only returns the keys of the user's file
+		final Set<String> present = config.getKeys(true);
+		boolean changed = false;
+		for (final String path : defaults.getKeys(true)) {
+			if (present.contains(path) || defaults.isConfigurationSection(path)) continue;
 
-		plugin.saveConfig();
-	}
-
-	private static void newFieldsFromV184ToV190() {
-		final JavaPlugin plugin = TeleportBow.getInstance();
-		final FileConfiguration config = TeleportBow.getInstance().getConfig();
-
-		setIfMissing(config, "worlds.list-type", "none");
-		setIfMissing(config, "worlds.list", Arrays.asList("world", "world_nether"));
-
-		setIfMissing(config, "teleport.sound.type", "ENTITY_ENDERMAN_TELEPORT");
-		setIfMissing(config, "teleport.sound.volume", 1.0);
-		setIfMissing(config, "teleport.sound.pitch", 1.0);
-		setIfMissing(config, "teleport.sound.enable", true);
-
-		setIfMissing(config, "message.world-not-allowed", "&cThe Bow in this world is not allowed");
-
-		setIfMissing(config, "bstats", true);
-
-		plugin.saveConfig();
-	}
-
-	private static void newFieldsFromV190ToV191() {
-		final JavaPlugin plugin = TeleportBow.getInstance();
-		final FileConfiguration config = TeleportBow.getInstance().getConfig();
-
-		setIfMissing(config, "bow.arrow-damage", false);
-		setIfMissing(config, "bow.needed-permission", false);
-
-		setIfMissing(config, "regions.list-type", "none");
-		setIfMissing(config, "regions.list", Collections.singletonList("region"));
-
-		setIfMissing(config, "message.region-not-allowed", "&cThe Bow in this region is not allowed");
-		setIfMissing(config, "message.bow-not-allowed", "&cYou can't use this bow");
-
-		plugin.saveConfig();
-	}
-
-	private static void newFieldsFromV110ToV1101() {
-		final JavaPlugin plugin = TeleportBow.getInstance();
-		final FileConfiguration config = TeleportBow.getInstance().getConfig();
-
-		setIfMissing(config, "bow.keep-on-death", false);
-
-		plugin.saveConfig();
-	}
-
-	private static void setIfMissing(FileConfiguration config, String path, Object defaultValue) {
-		if (!config.isSet(path)) {
-			config.set(path, defaultValue);
-			TeleportBow.getInstance().getLogger().info("Configuration: Added missing '" + path + "' with default value '" + defaultValue + "'.");
+			config.set(path, defaults.get(path));
+			plugin.getLogger().info("Configuration: Added missing '" + path + "' with default value '" + defaults.get(path) + "'.");
+			changed = true;
 		}
-	}
 
+		if (changed) plugin.saveConfig();
+	}
 
 }

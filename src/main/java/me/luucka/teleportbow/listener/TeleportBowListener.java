@@ -1,6 +1,7 @@
 package me.luucka.teleportbow.listener;
 
 import me.luucka.teleportbow.BowManager;
+import me.luucka.teleportbow.Permissions;
 import me.luucka.teleportbow.TeleportBow;
 import me.luucka.teleportbow.hook.HookManager;
 import me.luucka.teleportbow.setting.Settings;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,14 +33,14 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import static me.luucka.teleportbow.util.Color.colorize;
 
 public final class TeleportBowListener implements Listener {
 
@@ -76,22 +78,22 @@ public final class TeleportBowListener implements Listener {
 		final Player player = (Player) event.getEntity();
 
 		if (Settings.NEEDED_PERMISSION) {
-			if (!player.hasPermission("tpbow.use") && !player.hasPermission("tpbow.bypass")) {
+			if (!player.hasPermission(Permissions.USE) && !player.hasPermission(Permissions.BYPASS)) {
 				event.setCancelled(true);
-				player.sendMessage(colorize(Settings.BOW_NOT_ALLOWED));
+				player.sendMessage(Settings.BOW_NOT_ALLOWED);
 				return;
 			}
 		}
 
-		if (isWorldBlocked(player.getWorld()) && !player.hasPermission("tpbow.bypass")) {
+		if (isWorldBlocked(player.getWorld()) && !player.hasPermission(Permissions.BYPASS)) {
 			event.setCancelled(true);
-			player.sendMessage(colorize(Settings.WORLD_NOT_ALLOWED));
+			player.sendMessage(Settings.WORLD_NOT_ALLOWED);
 			return;
 		}
 
-		if (isRegionBlocked(player) && !player.hasPermission("tpbow.bypass")) {
+		if (isRegionBlocked(player) && !player.hasPermission(Permissions.BYPASS)) {
 			event.setCancelled(true);
-			player.sendMessage(colorize(Settings.REGION_NOT_ALLOWED));
+			player.sendMessage(Settings.REGION_NOT_ALLOWED);
 			return;
 		}
 
@@ -101,11 +103,11 @@ public final class TeleportBowListener implements Listener {
 
 		final int entityId = event.getProjectile().getEntityId();
 
-		BowManager.getTpArrows().put(player.getUniqueId(), entityId);
+		BowManager.getTpArrows().put(entityId, player.getUniqueId());
 
 		Bukkit.getScheduler().runTask(TeleportBow.getInstance(), () -> BowManager.giveArrow(player));
 
-		Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(player.getUniqueId(), entityId), 600L);
+		Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(entityId), 600L);
 	}
 
 	@EventHandler
@@ -119,9 +121,9 @@ public final class TeleportBowListener implements Listener {
 		final Location playerLocation = player.getLocation();
 		final Projectile projectile = event.getEntity();
 		final int entityId = projectile.getEntityId();
-		if (!BowManager.getTpArrows().get(player.getUniqueId()).contains(entityId)) return;
+		if (!player.getUniqueId().equals(BowManager.getTpArrows().get(entityId))) return;
 
-		event.getEntity().remove();
+		projectile.remove();
 
 		final Location arrowLocation = getSafeLocation(projectile.getLocation(), projectile.getVelocity());
 		if (arrowLocation == null) return;
@@ -139,7 +141,7 @@ public final class TeleportBowListener implements Listener {
 		}
 
 		// Kept for a short time, so onPlayerHitByArrow still recognizes the arrow
-		Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(player.getUniqueId(), entityId), 20L);
+		Bukkit.getScheduler().runTaskLater(TeleportBow.getInstance(), () -> BowManager.getTpArrows().remove(entityId), 20L);
 	}
 
 	@EventHandler
@@ -154,12 +156,9 @@ public final class TeleportBowListener implements Listener {
 
 	@EventHandler
 	public void onPlayerHitByArrow(final EntityDamageByEntityEvent event) {
-		if (!Settings.ARROW_DAMAGE) {
-			if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
-				if (BowManager.getTpArrows().containsValue(event.getDamager().getEntityId())) {
-					event.setCancelled(true);
-				}
-			}
+		if (!Settings.ARROW_DAMAGE && event.getEntity() instanceof Player && event.getDamager() instanceof Arrow
+				&& BowManager.getTpArrows().containsKey(event.getDamager().getEntityId())) {
+			event.setCancelled(true);
 		}
 	}
 
@@ -189,77 +188,50 @@ public final class TeleportBowListener implements Listener {
 
 	@EventHandler
 	public void onQuit(final PlayerQuitEvent event) {
-		BowManager.getTpArrows().removeAll(event.getPlayer().getUniqueId());
+		BowManager.getTpArrows().values().removeIf(event.getPlayer().getUniqueId()::equals);
 		fallImmunityUntil.remove(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
 	public void onItemDrop(final PlayerDropItemEvent event) {
-		if (!Settings.CAN_BE_DROPPED) {
-			if (BowManager.isValidBow(event.getItemDrop().getItemStack())) {
-				event.setCancelled(true);
-			}
-		}
+		if (!Settings.CAN_BE_DROPPED) cancelIfBow(event, event.getItemDrop().getItemStack());
 	}
 
 	@EventHandler
 	public void onInventoryClick(final InventoryClickEvent event) {
-		if (!Settings.CAN_BE_MOVED_IN_INVENTORY) {
-			final ItemStack item = event.getCurrentItem();
-			if (item != null && BowManager.isValidBow(item)) {
-				event.setCancelled(true);
-				return;
-			}
+		if (Settings.CAN_BE_MOVED_IN_INVENTORY) return;
 
-			// Number keys swap the clicked slot with a hotbar slot, which can hold the bow
-			if (event.getClick() == ClickType.NUMBER_KEY) {
-				final ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
-				if (hotbarItem != null && BowManager.isValidBow(hotbarItem)) {
-					event.setCancelled(true);
-				}
-			}
+		cancelIfBow(event, event.getCurrentItem());
 
-			// The F key swaps the clicked slot with the off hand (1.16+, ClickType.SWAP_OFFHAND does not exist before)
-			if ("SWAP_OFFHAND".equals(event.getClick().name())) {
-				final ItemStack offHandItem = event.getWhoClicked().getInventory().getItemInOffHand();
-				if (offHandItem != null && BowManager.isValidBow(offHandItem)) {
-					event.setCancelled(true);
-				}
-			}
+		// Number keys swap the clicked slot with a hotbar slot, which can hold the bow
+		if (event.getClick() == ClickType.NUMBER_KEY) {
+			cancelIfBow(event, event.getWhoClicked().getInventory().getItem(event.getHotbarButton()));
+		}
+
+		// The F key swaps the clicked slot with the off hand (1.16+, ClickType.SWAP_OFFHAND does not exist before)
+		if ("SWAP_OFFHAND".equals(event.getClick().name())) {
+			cancelIfBow(event, event.getWhoClicked().getInventory().getItemInOffHand());
 		}
 	}
 
 	@EventHandler
 	public void onInventoryDrag(final InventoryDragEvent event) {
-		if (!Settings.CAN_BE_MOVED_IN_INVENTORY) {
-			final ItemStack item = event.getOldCursor();
-			if (item != null && BowManager.isValidBow(item)) {
-				event.setCancelled(true);
-			}
-		}
+		if (!Settings.CAN_BE_MOVED_IN_INVENTORY) cancelIfBow(event, event.getOldCursor());
 	}
 
 	static class SwapHandListener implements Listener {
 
 		@EventHandler
 		public void onSwapHandItem(final PlayerSwapHandItemsEvent event) {
-			final ItemStack mainHand = event.getMainHandItem();
-			final ItemStack offHand = event.getOffHandItem();
+			if (Settings.CAN_BE_SWAPPED) return;
 
-			if (mainHand == null && offHand == null) return;
-
-			boolean isMainHand = false;
-			if (mainHand != null) {
-				if (BowManager.isValidBow(mainHand)) isMainHand = true;
-			}
-
-			boolean isOffHand = false;
-			if (offHand != null) {
-				if (BowManager.isValidBow(offHand)) isOffHand = true;
-			}
-
-			if (!Settings.CAN_BE_SWAPPED && (isMainHand || isOffHand)) event.setCancelled(true);
+			cancelIfBow(event, event.getMainHandItem());
+			cancelIfBow(event, event.getOffHandItem());
 		}
+	}
+
+	private static void cancelIfBow(final Cancellable event, final ItemStack item) {
+		if (item != null && BowManager.isValidBow(item)) event.setCancelled(true);
 	}
 
 	/**
@@ -302,22 +274,29 @@ public final class TeleportBowListener implements Listener {
 	}
 
 	private static boolean isWorldBlocked(final World world) {
-		final String worldName = world.getName();
-		return !"none".equalsIgnoreCase(Settings.WORLDS_LIST_TYPE) && "whitelist".equalsIgnoreCase(Settings.WORLDS_LIST_TYPE) != Settings.WORLDS_LIST.contains(worldName);
+		return isBlocked(Settings.WORLDS_LIST_TYPE, Settings.WORLDS_LIST, Collections.singletonList(world.getName()));
 	}
 
 	private static boolean isRegionBlocked(final Player player) {
-		String type = Settings.REGIONS_LIST_TYPE.toLowerCase();
-		if ("none".equals(type)) return false;
+		if ("none".equals(Settings.REGIONS_LIST_TYPE)) return false;
 
-		List<String> regions = HookManager.getRegions(player.getLocation());
+		final List<String> regions = HookManager.getRegions(player.getLocation());
+		// Outside every region the bow is allowed, with a whitelist too
 		if (regions.isEmpty()) return false;
 
+		return isBlocked(Settings.REGIONS_LIST_TYPE, Settings.REGIONS_LIST, regions);
+	}
+
+	/**
+	 * @param type   none, whitelist (only the listed values allowed) or blacklist (the listed values denied)
+	 * @param values the world or the regions where the player is
+	 */
+	private static boolean isBlocked(final String type, final List<String> list, final Collection<String> values) {
 		switch (type) {
 			case "whitelist":
-				return regions.stream().noneMatch(Settings.REGIONS_LIST::contains);
+				return values.stream().noneMatch(list::contains);
 			case "blacklist":
-				return regions.stream().anyMatch(Settings.REGIONS_LIST::contains);
+				return values.stream().anyMatch(list::contains);
 			default:
 				return false;
 		}

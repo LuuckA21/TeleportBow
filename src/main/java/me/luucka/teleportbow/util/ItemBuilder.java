@@ -1,5 +1,6 @@
 package me.luucka.teleportbow.util;
 
+import me.luucka.teleportbow.TeleportBow;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFactory;
@@ -7,56 +8,30 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This class help you to create a new {@link ItemStack} from a {@link Material}.
  */
 public final class ItemBuilder {
 
-	private static final ItemFactory ITEM_FACTORY;
+	private static final ItemFactory ITEM_FACTORY = Bukkit.getItemFactory();
 
 	private final Material material;
 	private final ItemMeta meta;
-	private final int amount;
 
 	private final Map<String, String> tags = new HashMap<>();
 
-	static {
-		ITEM_FACTORY = Bukkit.getItemFactory();
-	}
-
-	/**
-	 * Constructor
-	 *
-	 * @param material {@link Material} representing the item
-	 */
 	public ItemBuilder(final Material material) {
-		this(material, 1);
-	}
-
-	/**
-	 * Constructor
-	 *
-	 * @param material {@link Material} representing the item
-	 * @param amount   of the items will give you
-	 */
-	public ItemBuilder(final Material material, final int amount) {
 		this.material = material;
 		meta = ITEM_FACTORY.getItemMeta(material);
-		this.amount = amount <= 0 ? 1 : amount;
 	}
 
-	/**
-	 * Return a new {@link ItemStack} based on 'material' and 'amount'
-	 *
-	 * @return an {@link ItemStack}
-	 */
 	public ItemStack make() {
-		final ItemStack item = new ItemStack(material, amount);
+		final ItemStack item = new ItemStack(material, 1);
 		item.setItemMeta(meta);
 
 		NbtPdcUtil.setTags(item, tags);
@@ -64,75 +39,38 @@ public final class ItemBuilder {
 		return item;
 	}
 
-    /*
-        Generic Item section
-        ----------------------------------------------------------------------------------------------------------------
-     */
-
-	/**
-	 * Sets the display name.
-	 *
-	 * @param name the name to set
-	 */
 	public ItemBuilder setDisplayName(final String name) {
 		meta.setDisplayName(name);
 		return this;
 	}
 
-	/**
-	 * Sets the lore for this item.
-	 * Removes lore when given null.
-	 *
-	 * @param lore the lore that will be set
-	 */
 	public ItemBuilder setLore(final List<String> lore) {
 		meta.setLore(lore);
 		return this;
 	}
 
-	/**
-	 * Set itemflags which should be ignored when rendering a ItemStack in the Client.
-	 * <p>
-	 * This Method does silently ignore double set itemFlags.
-	 */
 	public ItemBuilder hideAttributes() {
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		return this;
 	}
 
-	/**
-	 * Set itemflags which should be ignored when rendering a ItemStack in the Client.
-	 * <p>
-	 * This Method does silently ignore double set itemFlags.
-	 */
 	public ItemBuilder hideUnbreakable() {
 		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 		return this;
 	}
 
-	/**
-	 * Sets the unbreakable tag. An unbreakable item will not lose durability.
-	 *
-	 * @param unbreakable true if set unbreakable
-	 */
 	public ItemBuilder setUnbreakable(final boolean unbreakable) {
 		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_11)) {
 			meta.setUnbreakable(unbreakable);
 		} else {
+			// Before 1.11 it is only available through ItemMeta.spigot(). The methods are looked up on the public
+			// Bukkit interfaces: the CraftBukkit implementations are not public, so invoking them would fail
 			try {
-				if (meta != null) {
-					Method spigotMethod = meta.getClass().getMethod("spigot");
-					spigotMethod.setAccessible(true);
-
-					Object spigot = spigotMethod.invoke(meta);
-
-					Method setUnbreakableMethod = spigot.getClass().getMethod("setUnbreakable", boolean.class);
-					setUnbreakableMethod.setAccessible(true);
-
-					setUnbreakableMethod.invoke(spigot, unbreakable);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				final Object spigot = ItemMeta.class.getMethod("spigot").invoke(meta);
+				Class.forName("org.bukkit.inventory.meta.ItemMeta$Spigot")
+						.getMethod("setUnbreakable", boolean.class).invoke(spigot, unbreakable);
+			} catch (final ReflectiveOperationException e) {
+				TeleportBow.getInstance().getLogger().log(Level.WARNING, "Cannot make the item unbreakable", e);
 			}
 		}
 		return this;

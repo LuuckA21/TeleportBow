@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
  * Up to 1.9.6 the bow tag was written as NBT on every version. On 1.14+ those bows have no PDC tag,
  * so the NBT tag is read here once and copied to the PDC. The NBT tag is left in place, so a downgrade still works.
  * <p>
- * Phase 2: delete this class, its usages (BowManager, TestBowCommand) and item-nbt-api from pom.xml.
+ * Phase 2: delete this class, its usage in BowManager and item-nbt-api from pom.xml.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LegacyNbtMigration {
@@ -31,15 +31,6 @@ public final class LegacyNbtMigration {
 
 		NbtPdcUtil.setTag(item, key, value);
 		return value;
-	}
-
-	/**
-	 * Writes a tag the way 1.9.6 did, to test the migration.
-	 */
-	public static void writeLegacyTag(final ItemStack item, final String key, final String value) {
-		NBT.modify(item, nbt -> {
-			nbt.setString(key, value);
-		});
 	}
 
 }

@@ -6,7 +6,7 @@
 
     <groupId>me.luucka</groupId>
     <artifactId>teleportbow</artifactId>
-    <version>1.10.2</version>
+    <version>1.10.3</version>
     <packaging>jar</packaging>
 
     <name>TeleportBow</name>
@@ -25,6 +25,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.16.0</version>
                 <configuration>
+                    <!-- Not release 8: the WorldGuard 7 API uses Java records, unknown to the Java 8 API -->
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <annotationProcessorPaths>
@@ -88,10 +89,6 @@
         <repository>
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
-        </repository>
-        <repository>
-            <id>maven-snapshots</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 

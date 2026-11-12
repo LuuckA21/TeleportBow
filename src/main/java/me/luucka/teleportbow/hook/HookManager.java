@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HookManager {
@@ -33,72 +32,14 @@ public final class HookManager {
 	}
 
 	/**
-	 * Is WorldEdit loaded?
-	 *
-	 * @return
-	 */
-	public static boolean isWorldEditLoaded() {
-		return worldeditHook != null || isFAWELoaded();
-	}
-
-	/**
-	 * Is FastAsyncWorldEdit loaded?
-	 *
-	 * @return
-	 */
-	public static boolean isFAWELoaded() {
-
-		// Check for FastAsyncWorldEdit directly.
-		final Plugin fawe = Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit");
-
-		if (fawe != null && fawe.isEnabled())
-			return true;
-
-		// Check for legacy FastAsyncWorldEdit installations.
-		final Plugin worldEdit = Bukkit.getPluginManager().getPlugin("WorldEdit");
-
-		if (worldEdit != null && worldEdit.isEnabled() && "Fast Async WorldEdit plugin".equals(worldEdit.getDescription().getDescription()))
-			return true;
-
-		return false;
-	}
-
-	/**
-	 * Is WorldGuard loaded?
-	 *
-	 * @return
-	 */
-	public static boolean isWorldGuardLoaded() {
-		return worldguardHook != null;
-	}
-
-	// ------------------------------------------------------------------------------------------------------------
-	// WorldGuard
-	// ------------------------------------------------------------------------------------------------------------
-
-	/**
 	 * Return a list of regions at the given location, or an empty list if
 	 * there are none.
 	 *
 	 * @param loc the location to check.
-	 * @return
 	 */
 	public static List<String> getRegions(final Location loc) {
-		return isWorldGuardLoaded() ? worldguardHook.getRegionsAt(loc) : new ArrayList<>();
+		return worldguardHook != null ? worldguardHook.getRegionsAt(loc) : new ArrayList<>();
 	}
-
-	/**
-	 * Return a list of loaded regions, or an empty list if there are none.
-	 *
-	 * @return
-	 */
-	public static List<String> getRegions() {
-		return isWorldGuardLoaded() ? worldguardHook.getAllRegions() : new ArrayList<>();
-	}
-
-	// ------------------------------------------------------------------------------------------------------------
-	// Utility
-	// ------------------------------------------------------------------------------------------------------------
 
 	private static boolean isPluginInstalled(final String name) {
 		Plugin lookup = null;
@@ -148,6 +89,13 @@ class WorldGuardHook {
 
 	private final boolean legacy;
 
+	// Reflection resolved on first use, the regions are checked on every shot
+	private Method legacyGetRegionManager;
+	private Method legacyGetApplicableRegions;
+	private Object regionContainer;
+	private Method regionContainerGet;
+	private Constructor<?> bukkitWorldConstructor;
+
 	public WorldGuardHook(final WorldEditHook we) {
 		final Plugin wg = Bukkit.getPluginManager().getPlugin("WorldGuard");
 
@@ -166,50 +114,7 @@ class WorldGuardHook {
 		return list;
 	}
 
-	public List<String> getAllRegions() {
-		final List<String> list = new ArrayList<>();
-
-		for (final World w : Bukkit.getWorlds()) {
-			final Object rm = this.getRegionManager(w);
-			if (rm == null) continue;
-			if (this.legacy)
-				try {
-					final Map<?, ?> regionMap = (Map<?, ?>) rm.getClass().getMethod("getRegions").invoke(rm);
-					Method getId = null;
-					for (final Object regObj : regionMap.values()) {
-						if (regObj == null)
-							continue;
-						if (getId == null)
-							getId = regObj.getClass().getMethod("getId");
-
-//						final String name = CompChatColor.stripColorCodes(getId.invoke(regObj).toString());
-						final String name = getId.invoke(regObj).toString();
-
-						if (!name.startsWith("__"))
-							list.add(name);
-					}
-				} catch (final Throwable t) {
-					t.printStackTrace();
-
-					throw new RuntimeException("Failed WorldEdit 6 legacy hook, see above and report");
-				}
-			else
-				((com.sk89q.worldguard.protection.managers.RegionManager) rm)
-						.getRegions().values().forEach(reg -> {
-							if (reg == null || reg.getId() == null)
-								return;
-
-//							final String name = CompChatColor.stripColorCodes(reg.getId());
-							final String name = reg.getId();
-
-							if (!name.startsWith("__"))
-								list.add(name);
-						});
-		}
-
-		return list;
-	}
-
+	@SuppressWarnings("unchecked")
 	private Iterable<ProtectedRegion> getApplicableRegions(final Location loc) {
 		final Object rm = this.getRegionManager(loc.getWorld());
 		// null when regions are disabled in this world
@@ -217,7 +122,10 @@ class WorldGuardHook {
 
 		if (this.legacy)
 			try {
-				return (Iterable<ProtectedRegion>) rm.getClass().getMethod("getApplicableRegions", Location.class).invoke(rm, loc);
+				if (legacyGetApplicableRegions == null) {
+					legacyGetApplicableRegions = rm.getClass().getMethod("getApplicableRegions", Location.class);
+				}
+				return (Iterable<ProtectedRegion>) legacyGetApplicableRegions.invoke(rm, loc);
 
 			} catch (final Throwable t) {
 				t.printStackTrace();
@@ -232,7 +140,10 @@ class WorldGuardHook {
 	private Object getRegionManager(final World w) {
 		if (this.legacy)
 			try {
-				return Class.forName("com.sk89q.worldguard.bukkit.WGBukkit").getMethod("getRegionManager", World.class).invoke(null, w);
+				if (legacyGetRegionManager == null) {
+					legacyGetRegionManager = Class.forName("com.sk89q.worldguard.bukkit.WGBukkit").getMethod("getRegionManager", World.class);
+				}
+				return legacyGetRegionManager.invoke(null, w);
 
 			} catch (final Throwable t) {
 				t.printStackTrace();
@@ -240,18 +151,18 @@ class WorldGuardHook {
 				throw new RuntimeException("Failed WorldGuard 6 legacy hook, see above and report");
 			}
 
-		// Causes class errors.
-		//return com.sk89q.worldguard.WorldGuard.getInstance().getPlatform().getRegionContainer().get(new com.sk89q.worldedit.bukkit.BukkitWorld(w));
-		// Dynamically load modern WorldEdit.
+		// Dynamically load modern WorldEdit, referencing its classes directly causes class errors
 		try {
+			if (regionContainer == null) {
+				bukkitWorldConstructor = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld").getConstructor(World.class);
 
-			final Class<?> bwClass = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld");
-			final Constructor<?> bwClassNew = bwClass.getConstructor(World.class);
-
-			Object t = Class.forName("com.sk89q.worldguard.WorldGuard").getMethod("getInstance").invoke(null);
-			t = t.getClass().getMethod("getPlatform").invoke(t);
-			t = t.getClass().getMethod("getRegionContainer").invoke(t);
-			return t.getClass().getMethod("get", Class.forName("com.sk89q.worldedit.world.World")).invoke(t, bwClassNew.newInstance(w));
+				Object t = Class.forName("com.sk89q.worldguard.WorldGuard").getMethod("getInstance").invoke(null);
+				t = t.getClass().getMethod("getPlatform").invoke(t);
+				t = t.getClass().getMethod("getRegionContainer").invoke(t);
+				regionContainerGet = t.getClass().getMethod("get", Class.forName("com.sk89q.worldedit.world.World"));
+				regionContainer = t;
+			}
+			return regionContainerGet.invoke(regionContainer, bukkitWorldConstructor.newInstance(w));
 
 		} catch (final Throwable t) {
 			t.printStackTrace();
