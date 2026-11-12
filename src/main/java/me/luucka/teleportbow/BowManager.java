@@ -1,7 +1,5 @@
 package me.luucka.teleportbow;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,20 +13,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-
-import static me.luucka.teleportbow.util.Color.colorize;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BowManager {
 
+	// Entity id of each teleport arrow in flight -> shooter
 	@Getter
-	private static final Multimap<UUID, Integer> tpArrows = ArrayListMultimap.create();
+	private static final Map<Integer, UUID> tpArrows = new HashMap<>();
 
 	public static ItemStack createBow() {
 		return new ItemBuilder(Settings.BOW_TYPE)
-				.setDisplayName(colorize(Settings.BOW_NAME))
-				.setLore(colorize(Settings.BOW_LORE))
+				.setDisplayName(Settings.BOW_NAME)
+				.setLore(Settings.BOW_LORE)
 				.setUnbreakable(true)
 				.hideAttributes()
 				.hideUnbreakable()
@@ -79,15 +78,15 @@ public final class BowManager {
 		}
 	}
 
-	public static boolean isValidBow(final ItemStack bow) {
-		if (MinecraftVersion.olderThan(MinecraftVersion.V.v1_14)) {
-			if (bow.getType() != Material.BOW) return false;
-		} else {
-			if (bow.getType() != Material.BOW && bow.getType() != Material.CROSSBOW) return false;
-		}
+	/**
+	 * BOW, or CROSSBOW on 1.14+ (the constant does not exist before).
+	 */
+	public static boolean isBowMaterial(final Material type) {
+		return type == Material.BOW || MinecraftVersion.atLeast(MinecraftVersion.V.v1_14) && type == Material.CROSSBOW;
+	}
 
-		String key = getTagWithFallback(bow, "tpbow");
-		return key != null && key.equals("TpBow");
+	public static boolean isValidBow(final ItemStack bow) {
+		return isBowMaterial(bow.getType()) && "TpBow".equals(getTagWithFallback(bow, "tpbow"));
 	}
 
 	private static String getTagWithFallback(final ItemStack item, final String key) {

@@ -9,24 +9,27 @@ import java.util.stream.Collectors;
 
 public final class Color {
 
-	private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+	private static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
 
 	private Color() {
 	}
 
-	public static String colorize(String input) {
+	public static String colorize(final String input) {
+		String text = input;
 		if (MinecraftVersion.atLeast(MinecraftVersion.V.v1_16)) {
-			Matcher match = pattern.matcher(input);
-			while (match.find()) {
-				String color = input.substring(match.start(), match.end());
-				input = input.replace(color, ChatColor.of(color) + "");
-				match = pattern.matcher(input);
+			final Matcher matcher = HEX_PATTERN.matcher(text);
+			// StringBuffer: the StringBuilder overload of appendReplacement needs Java 9
+			final StringBuffer buffer = new StringBuffer();
+			while (matcher.find()) {
+				matcher.appendReplacement(buffer, Matcher.quoteReplacement(ChatColor.of(matcher.group()).toString()));
 			}
+			matcher.appendTail(buffer);
+			text = buffer.toString();
 		}
-		return ChatColor.translateAlternateColorCodes('&', input);
+		return ChatColor.translateAlternateColorCodes('&', text);
 	}
 
-	public static List<String> colorize(List<String> inputs) {
+	public static List<String> colorize(final List<String> inputs) {
 		return inputs.stream()
 				.map(Color::colorize)
 				.collect(Collectors.toList());
