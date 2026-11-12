@@ -62,7 +62,7 @@ public final class TeleportBowListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerShootBow(final EntityShootBowEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
@@ -121,15 +121,17 @@ public final class TeleportBowListener implements Listener {
 		final int entityId = projectile.getEntityId();
 		if (!BowManager.getTpArrows().get(player.getUniqueId()).contains(entityId)) return;
 
+		event.getEntity().remove();
+
 		final Location arrowLocation = getSafeLocation(projectile.getLocation(), projectile.getVelocity());
+		if (arrowLocation == null) return;
 
 		arrowLocation.setYaw(playerLocation.getYaw());
 		arrowLocation.setPitch(playerLocation.getPitch());
 
-		event.getEntity().remove();
+		if (!player.teleport(arrowLocation)) return;
 
 		player.setFallDistance(0F);
-		player.teleport(arrowLocation);
 		fallImmunityUntil.put(player.getUniqueId(), System.currentTimeMillis() + FALL_IMMUNITY_MILLIS);
 
 		if (Settings.SOUND_ENABLE) {
@@ -263,9 +265,15 @@ public final class TeleportBowListener implements Listener {
 	/**
 	 * When the arrow hits the side of a block its location is inside the block: the location is moved back along
 	 * the arrow direction until the player fits, and centered in the block so the player is not stuck in the wall.
+	 * The feet are moved to the bottom of the block, so the player (1.8 blocks tall) stays in the two checked blocks.
+	 *
+	 * @return the location, or null if there is no room for the player
 	 */
 	private static Location getSafeLocation(final Location arrowLocation, final Vector velocity) {
-		if (fitsPlayer(arrowLocation)) return arrowLocation;
+		if (fitsPlayer(arrowLocation)) {
+			arrowLocation.setY(arrowLocation.getBlockY());
+			return arrowLocation;
+		}
 
 		final Vector step = velocity.lengthSquared() > 0
 				? velocity.clone().normalize().multiply(-0.25)
@@ -274,13 +282,18 @@ public final class TeleportBowListener implements Listener {
 		final Location location = arrowLocation.clone();
 		for (int i = 0; i < 12; i++) {
 			location.add(step);
-			if (fitsPlayer(location)) {
-				location.setX(location.getBlockX() + 0.5);
-				location.setZ(location.getBlockZ() + 0.5);
-				return location;
+			// A horizontal shot hits at eye height: one block lower fits e.g. a corridor two blocks high
+			for (int down = 0; down <= 1; down++) {
+				final Location candidate = location.clone().subtract(0, down, 0);
+				if (fitsPlayer(candidate)) {
+					candidate.setX(candidate.getBlockX() + 0.5);
+					candidate.setY(candidate.getBlockY());
+					candidate.setZ(candidate.getBlockZ() + 0.5);
+					return candidate;
+				}
 			}
 		}
-		return arrowLocation;
+		return null;
 	}
 
 	private static boolean fitsPlayer(final Location location) {
@@ -295,6 +308,8 @@ public final class TeleportBowListener implements Listener {
 
 	private static boolean isRegionBlocked(final Player player) {
 		String type = Settings.REGIONS_LIST_TYPE.toLowerCase();
+		if ("none".equals(type)) return false;
+
 		List<String> regions = HookManager.getRegions(player.getLocation());
 		if (regions.isEmpty()) return false;
 

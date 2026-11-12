@@ -125,6 +125,11 @@ public final class Settings {
 		BOW_LORE = config.getStringList("bow.lore");
 		BOW_SLOT = config.getInt("bow.slot");
 		ARROW_SLOT = config.getInt("bow.arrow-slot");
+		if (BOW_SLOT < 0 || BOW_SLOT > 35 || ARROW_SLOT < 0 || ARROW_SLOT > 35 || BOW_SLOT == ARROW_SLOT) {
+			plugin.getLogger().warning("bow.slot and bow.arrow-slot must be two different slots from 0 to 35, using 0 and 9");
+			BOW_SLOT = 0;
+			ARROW_SLOT = 9;
+		}
 		ARROW_DAMAGE = config.getBoolean("bow.arrow-damage");
 		NEEDED_PERMISSION = config.getBoolean("bow.needed-permission");
 		GIVE_ON_JOIN = config.getBoolean("bow.give-on-join");

@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -170,6 +171,7 @@ class WorldGuardHook {
 
 		for (final World w : Bukkit.getWorlds()) {
 			final Object rm = this.getRegionManager(w);
+			if (rm == null) continue;
 			if (this.legacy)
 				try {
 					final Map<?, ?> regionMap = (Map<?, ?>) rm.getClass().getMethod("getRegions").invoke(rm);
@@ -210,6 +212,8 @@ class WorldGuardHook {
 
 	private Iterable<ProtectedRegion> getApplicableRegions(final Location loc) {
 		final Object rm = this.getRegionManager(loc.getWorld());
+		// null when regions are disabled in this world
+		if (rm == null) return Collections.emptyList();
 
 		if (this.legacy)
 			try {
